@@ -6,8 +6,8 @@ from .converters import YearConverter
 register_converter(YearConverter, 'year_conv')
 
 urlpatterns = [
-    path('', index),
-    path('cats/<int:cat_id>/', category_by_id),
-    path('cats/<slug:cat_slug>/', category_by_slug),
-    path('archive/<year_conv:year>/', archive),
+    path('', index, name='catalog_main'),
+    path('cats/<int:cat_id>/', category_by_id, name='catalog_cat_id'),
+    path('cats/<slug:cat_slug>/', category_by_slug, name='catalog_cat_slug'),
+    path('archive/<year_conv:year>/', archive, name='catalog_archive'),
 ]
