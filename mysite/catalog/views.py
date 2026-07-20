@@ -1,12 +1,16 @@
 from django.http import HttpRequest, HttpResponse, HttpResponseNotFound, HttpResponseRedirect
-from django.shortcuts import redirect
+from django.shortcuts import render
 import datetime
 
 from django.urls import reverse
+from django.template.loader import render_to_string
 
 
 def index(request: HttpRequest) -> HttpResponse:
-    return HttpResponse('Catalog main page')
+    return render(request, 'catalog/index.html')
+
+def about_us(request: HttpRequest) -> HttpResponse:
+    return render(request, 'catalog/about_us.html')
 
 def category_by_id(request: HttpRequest, cat_id: int) -> HttpResponse:
     return HttpResponse(f'<h1>Categories</h1><p>cat id: {cat_id}<p/>')
