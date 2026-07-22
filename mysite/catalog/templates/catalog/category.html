@@ -4,18 +4,16 @@
     <title>{{ title }}</title>
 </head>
 <body>
-    <p>{{ menu }}</p>
     <h1>{{ title }}</h1>
     <ul>
     {% for item in items_list %}
         <li>
             <strong>{{ item.name }}</strong> — {{ item.price }} rub. 
-            (Category: {{ item.cat }})
+            <p><a href="{% url 'catalog_item_id' item.id %}">Show more</a></p>
         </li>
     {% empty %}
         <li>There's no items yet.</li>
     {% endfor %}
     </ul>
-
 </body>
 </html>
