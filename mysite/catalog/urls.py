@@ -13,4 +13,7 @@ urlpatterns = [
     path('archive/<year_conv:year>/', archive, name='catalog_archive'),
     path('item/<int:item_id>/', item_by_id, name='catalog_item_id'),
     path('item/<slug:item_slug>/', item_by_slug, name='catalog_item_slug'),
+    path('login/', login, name='login'),
+    path('add_item/', add_item, name='catalog_add_item'),
+    path('contact_us/', contact_us, name='contact_us'),
 ]

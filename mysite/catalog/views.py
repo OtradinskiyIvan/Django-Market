@@ -11,20 +11,41 @@ test_items = [
     {'id': 3, 'slug': 'test-pc', 'cat': 'test2', 'name': 'IPhone', 'price': 75_000},
 ]
 
-test_cats = [{'id': 1, 'name': 'test1'}, {'id': 2, 'name': 'test2'}]
+test_cats = [
+    {'id': 1, 'name': 'test1',},
+    {'id': 2, 'name': 'test2',},
+]
 
-menu = ["About us", "Add item", "Contacts", "Login"]
+menu = [
+    {'title': 'About us', 'url': 'about_us'},
+    {'title': 'Add item', 'url': 'catalog_add_item'},
+    {'title': 'Contact us', 'url': 'contact_us'},
+    {'title': 'Login', 'url': 'login'},
+]
 
 def index(request: HttpRequest) -> HttpResponse:
     data = {
         'title': 'Main page',
         'menu': menu,
         'items_list': test_items,
+        'cats': test_cats,
     }
     return render(request, 'catalog/index.html', data)
 
+def add_item(request: HttpRequest, ):
+    return HttpResponse('Stub add')
+
+def login(request: HttpRequest, ):
+    return HttpResponse('Stub login')
+
+def contact_us(request: HttpRequest, ):
+    return HttpResponse('Stub contact')
+
 def about_us(request: HttpRequest) -> HttpResponse:
-    data = {'title': 'About us'}
+    data = {
+        'title': 'About us',
+        'menu': menu,
+    }
     return render(request, 'catalog/about_us.html', data)
 
 def category_by_id(request: HttpRequest, cat_id: int) -> HttpResponse | Http404:
