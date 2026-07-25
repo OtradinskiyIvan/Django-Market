@@ -1,4 +1,6 @@
 {% load static %}
+{% load catalog_tags %}
+
 
 <!DOCTYPE html>
 <html>
@@ -16,10 +18,7 @@
         </li>
         {% endfor %}
     </ul>
-    {% if cats %}
-    <h1>Categories</h1>
-    <nav>{% for cat in cats %}<a href="{% url 'catalog_cat_id' cat.id %}">{{ cat.name }}</a>{% if not forloop.last %} | {% endif %}{% endfor %}</nav>
-    {% endif %}
+    {% show_cats %}
     {% block content %} {% endblock %}
 </body>
 </html>
