@@ -6,9 +6,9 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 
 test_items = [
-    {'id': 1, 'slug': 'test-laptop', 'cat': 'test1', 'name': 'Laptop', 'price': 20_000},
-    {'id': 2, 'slug': 'test-phone', 'cat': 'test1', 'name': 'PC', 'price': 80_000},
-    {'id': 3, 'slug': 'test-pc', 'cat': 'test2', 'name': 'IPhone', 'price': 75_000},
+    {'id': 1, 'slug': 'test-laptop', 'cat': 'test1', 'name': 'Laptop', 'price': 20_000, 'desc': 'Pretty nice <strong>laptop</strong>',},
+    {'id': 2, 'slug': 'test-phone', 'cat': 'test1', 'name': 'PC', 'price': 80_000, 'desc': 'Pretty nice <strong>phone</strong>',},
+    {'id': 3, 'slug': 'test-pc', 'cat': 'test2', 'name': 'IPhone', 'price': 75_000, 'desc': 'Pretty nice <strong>pc</strong>',},
 ]
 
 test_cats = [
@@ -79,7 +79,7 @@ def item_by_slug(request: HttpRequest, item_slug: str) -> HttpResponse | Http404
                 'title': item['name'],
                 'cat': item['cat'],
                 'price': item['price'],
-                'desc': 'test desc'
+                'desc': item['desc']
             }
             return render(request, 'catalog/item.html', data)
 
@@ -92,7 +92,7 @@ def item_by_id(request: HttpRequest, item_id: int) -> HttpResponse | Http404:
                 'title': item['name'],
                 'cat': item['cat'],
                 'price': item['price'],
-                'desc': 'test desc'
+                'desc': item['desc']
             }
             return render(request, 'catalog/item.html', data)
 

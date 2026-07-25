@@ -4,8 +4,9 @@
     <ul>
     {% for item in items_list %}
         <li>
-            <strong>{{ item.name }}</strong> — {{ item.price }} rub. 
-            (Category: {{ item.cat }})
+            <strong>{{ item.name }}</strong> — {{ item.price }} rub.
+            <p>(Category: {{ item.cat }})</p>
+            <p><a href="{% url 'catalog_item_id' item.id %}">Show more</a></p>
         </li>
     {% empty %}
         <li>There's no items yet.</li>

@@ -7,6 +7,9 @@
     <h1>Name: {{ title }}</h1>
     <p>Category: {{ cat }}</p>
     <p>Price: {{ price }}</p>
-    <p>Decription: {{ desc }}</p>
+    <h2>Decription:</h2> 
+    {% autoescape off %}
+    <p>{{ desc | linebreaks }}</p>
+    {% endautoescape %}
 </body>
 </html>
