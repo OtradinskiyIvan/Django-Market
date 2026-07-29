@@ -1,20 +1,12 @@
 from django.http import HttpRequest, HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 import datetime
 
 from django.urls import reverse
 from django.template.loader import render_to_string
 
-test_items = [
-    {'id': 1, 'slug': 'test-laptop', 'cat': 'test1', 'name': 'Laptop', 'price': 20_000, 'desc': 'Pretty nice <strong>laptop</strong>',},
-    {'id': 2, 'slug': 'test-phone', 'cat': 'test1', 'name': 'PC', 'price': 80_000, 'desc': 'Pretty nice <strong>phone</strong>',},
-    {'id': 3, 'slug': 'test-pc', 'cat': 'test2', 'name': 'IPhone', 'price': 75_000, 'desc': 'Pretty nice <strong>pc</strong>',},
-]
+from .models import Catalog, Category
 
-test_cats = [
-    {'id': 1, 'name': 'test1',},
-    {'id': 2, 'name': 'test2',},
-]
 
 menu = [
     {'title': 'About us', 'url': 'about_us'},
@@ -28,7 +20,6 @@ def index(request: HttpRequest) -> HttpResponse:
         'title': 'Main page',
         'menu': menu,
         'items_list': test_items,
-        'cats': test_cats,
     }
     return render(request, 'catalog/index.html', data)
 
@@ -49,54 +40,61 @@ def about_us(request: HttpRequest) -> HttpResponse:
     return render(request, 'catalog/about_us.html', data)
 
 def category_by_id(request: HttpRequest, cat_id: int) -> HttpResponse | Http404:
-    for cat in test_cats:
-        if cat['id'] == cat_id:
-            cat_items = [item for item in test_items if item['cat'] == cat['name']]
-            data = {
-                'title': cat['name'],
-                'items_list': cat_items,
-            }
-            return render(request, 'catalog/category.html', data)
-        
-    return HttpResponse(f'<h1>Categories</h1><p>cat id: {cat_id}<p/>')
+    cat = get_object_or_404(Category, pk=cat_id)
+
+    try:
+        data = {
+            'title': cat.title,
+            'items_list': cat.catalog_set.all(),
+        }
+        return render(request, 'catalog/category.html', data)
+
+    except Exception as exc:
+        raise exc
 
 def category_by_slug(request: HttpRequest, cat_slug: str) -> HttpResponse | Http404:
-    for cat in test_cats:
-        if cat['id'] == cat_slug:
-            cat_items = [item for item in test_items if item['cat'] == cat['name']]
-            data = {
-                'title': cat['name'],
-                'items_list': cat_items,
-            }
-            return render(request, 'catalog/category.html', data)
-        
-    return HttpResponse(f'<h1>Categories</h1><p>cat id: {cat_slug}<p/>')
+    cat = get_object_or_404(Category, slug=cat_slug)
+
+    try:
+        data = {
+            'title': cat.title,
+            'items_list': cat.catalog_set.all(),
+        }
+        return render(request, 'catalog/category.html', data)
+
+    except Exception as exc:
+        raise exc
+
 
 def item_by_slug(request: HttpRequest, item_slug: str) -> HttpResponse | Http404:
-    for item in test_items:
-        if item['slug'] == item_slug:
-            data = {
-                'title': item['name'],
-                'cat': item['cat'],
-                'price': item['price'],
-                'desc': item['desc']
-            }
-            return render(request, 'catalog/item.html', data)
+    item = get_object_or_404(Catalog, slug=item_slug)
+    
+    try:
+        data = {
+            'title': item.title,
+            'cat': item.category.title,
+            'price': item.price,
+            'desc': item.desc,
+        }
+        return render(request, 'catalog/item.html', data)
 
-    raise Http404("Sorry, we don't have this item.")
+    except Exception as exc:
+        raise exc
 
 def item_by_id(request: HttpRequest, item_id: int) -> HttpResponse | Http404:
-    for item in test_items:
-        if item['id'] == item_id:
-            data = {
-                'title': item['name'],
-                'cat': item['cat'],
-                'price': item['price'],
-                'desc': item['desc']
-            }
-            return render(request, 'catalog/item.html', data)
+    item = get_object_or_404(Catalog, pk=item_id)
 
-    raise Http404("Sorry, we don't have this item.")
+    try:
+        data = {
+            'title': item.title,
+            'cat': item.category.title,
+            'price': item.price,
+            'desc': item.desc,
+        }
+        return render(request, 'catalog/item.html', data)
+
+    except Exception as exc:
+        raise exc
 
 def archive(request: HttpRequest, year: int) -> HttpResponse | HttpResponseRedirect:
     if year > datetime.datetime.now().year:
