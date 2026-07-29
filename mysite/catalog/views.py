@@ -19,7 +19,7 @@ def index(request: HttpRequest) -> HttpResponse:
     data = {
         'title': 'Main page',
         'menu': menu,
-        'items_list': test_items,
+        'items_list': Catalog.objects.all(),
     }
     return render(request, 'catalog/index.html', data)
 

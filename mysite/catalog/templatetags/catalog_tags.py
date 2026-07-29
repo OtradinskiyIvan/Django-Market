@@ -1,6 +1,8 @@
 from django import template
 from .. import views
 
+from ..models import Category
+
 register = template.Library()
 
 @register.simple_tag()
@@ -9,5 +11,5 @@ def get_cats():
 
 @register.inclusion_tag('catalog/list_cats.html')
 def show_cats():
-    cats = views.test_cats
+    cats = Category.objects.all()
     return {'cats': cats}
