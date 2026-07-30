@@ -19,7 +19,7 @@ def index(request: HttpRequest) -> HttpResponse:
     data = {
         'title': 'Main page',
         'menu': menu,
-        'items_list': Catalog.objects.filter(is_available=1),
+        'items_list': Catalog.available.all(),
     }
     return render(request, 'catalog/index.html', data)
 
@@ -45,7 +45,7 @@ def category_by_id(request: HttpRequest, cat_id: int) -> HttpResponse | Http404:
     try:
         data = {
             'title': cat.title,
-            'items_list': cat.catalog_set.all(),
+            'items_list': cat.catalog_set.filter(is_available=1),
         }
         return render(request, 'catalog/category.html', data)
 

@@ -1,7 +1,15 @@
 from django.db import models
 
 
+class AvailabilityManeger(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(is_available=Catalog.Status.AVAILABLE)
+
 class Catalog(models.Model):
+    class Status(models.IntegerChoices):
+        ARCHIVED = 0,
+        AVAILABLE = 1,
+
     category = models.ForeignKey('Category', on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     price = models.IntegerField()
@@ -9,7 +17,10 @@ class Catalog(models.Model):
     desc = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    is_available = models.BooleanField(default=True)
+    is_available = models.BooleanField(choices=Status.choices, default=Status.AVAILABLE)
+
+    objects = models.Manager()
+    available = AvailabilityManeger()
 
 
 class Category(models.Model):
