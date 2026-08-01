@@ -23,14 +23,29 @@ def index(request: HttpRequest) -> HttpResponse:
     }
     return render(request, 'catalog/index.html', data)
 
-def add_item(request: HttpRequest, ):
-    return HttpResponse('Stub add')
+def add_item(request: HttpRequest, ) -> HttpResponse:
+    data = {
+        'title': 'Add item',
+        'menu': menu,
+        'message': 'Stub add',
+    }
+    return render(request, 'catalog/stub.html', data)
 
-def login(request: HttpRequest, ):
-    return HttpResponse('Stub login')
+def login(request: HttpRequest, ) -> HttpResponse:
+    data = {
+        'title': 'Login',
+        'menu': menu,
+        'message': 'Stub login',
+    }
+    return render(request, 'catalog/stub.html', data)
 
-def contact_us(request: HttpRequest, ):
-    return HttpResponse('Stub contact')
+def contact_us(request: HttpRequest, ) -> HttpResponse:
+    data = {
+        'title': 'Contact us',
+        'menu': menu,
+        'message': 'Stub contact',
+    }
+    return render(request, 'catalog/stub.html', data)
 
 def about_us(request: HttpRequest) -> HttpResponse:
     data = {
@@ -45,6 +60,7 @@ def category_by_id(request: HttpRequest, cat_id: int) -> HttpResponse | Http404:
     try:
         data = {
             'title': cat.title,
+            'menu': menu,
             'items_list': cat.catalog_set.filter(is_available=1),
         }
         return render(request, 'catalog/category.html', data)
@@ -58,6 +74,7 @@ def category_by_slug(request: HttpRequest, cat_slug: str) -> HttpResponse | Http
     try:
         data = {
             'title': cat.title,
+            'menu': menu,
             'items_list': cat.catalog_set.filter(is_available=1),
         }
         return render(request, 'catalog/category.html', data)
@@ -72,9 +89,11 @@ def item_by_slug(request: HttpRequest, item_slug: str) -> HttpResponse | Http404
     try:
         data = {
             'title': item.title,
+            'menu': menu,
             'cat': item.category.title,
             'price': item.price,
             'desc': item.desc,
+            'tags': item.tags.all(),
         }
         return render(request, 'catalog/item.html', data)
 
@@ -87,9 +106,11 @@ def item_by_id(request: HttpRequest, item_id: int) -> HttpResponse | Http404:
     try:
         data = {
             'title': item.title,
+            'menu': menu,
             'cat': item.category.title,
             'price': item.price,
             'desc': item.desc,
+            'tags': item.tags.all(),
         }
         return render(request, 'catalog/item.html', data)
 
@@ -101,6 +122,7 @@ def tag_by_slug(request, tag_slug) -> HttpResponse | Http404:
     try:
         data = {
             'title': tag.title,
+            'menu': menu,
             'items_list': tag.catalog_set.all(),
         }
         return render(request, 'catalog/category.html', data)
@@ -113,6 +135,7 @@ def tag_by_id(request, tag_id) -> HttpRequest | Http404:
     try:
         data = {
             'title': tag.title,
+            'menu': menu,
             'items_list': tag.catalog_set.all(),
         }
         return render(request, 'catalog/category.html', data)
@@ -126,6 +149,7 @@ def archive(request, year) -> HttpResponse | Http404:
 
     data = {
         'title': 'Main page',
+        'menu': menu,
         'items_list': Catalog.objects.filter(created_at__year=year, is_available=0),
     }
     return render(request, 'catalog/tag.html', data)

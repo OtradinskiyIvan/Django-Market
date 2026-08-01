@@ -1,7 +1,7 @@
 from django import template
 from .. import views
 
-from ..models import Category
+from ..models import Category, Tag
 
 register = template.Library()
 
@@ -13,3 +13,8 @@ def get_cats():
 def show_cats():
     cats = Category.objects.all()
     return {'cats': cats}
+
+@register.inclusion_tag('catalog/list_tags.html')
+def show_tags():
+    tags = Tag.objects.all()
+    return {'tags': tags}

@@ -1,19 +1,14 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ title }}</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% block content %}
     <h1>{{ title }}</h1>
     <ul>
     {% for item in items_list %}
         <li>
-            <strong>{{ item.title }}</strong> — {{ item.price }} rub. 
+            <strong>{{ item.title }}</strong> — {{ item.price }} rub.
             <p><a href="{% url 'catalog_item_id' item.id %}">Show more</a></p>
         </li>
     {% empty %}
         <li>There's no items yet.</li>
     {% endfor %}
     </ul>
-</body>
-</html>
+{% endblock %}

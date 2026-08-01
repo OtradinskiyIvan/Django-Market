@@ -1,0 +1,2 @@
+<h1>Tags</h1>
+<nav>{% for tag in tags %}<a href="{% url 'catalog_tag_id' tag.id %}">{{ tag.title }}</a>{% if not forloop.last %} | {% endif %}{% endfor %}</nav>

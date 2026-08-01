@@ -1,15 +1,17 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ title }}</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% block content %}
     <h1>Name: {{ title }}</h1>
     <p>Category: {{ cat }}</p>
+    {% if tags %}
+        <p>Tags:
+            {% for tag in tags %}
+                <a href="{% url 'catalog_tag_id' tag.id %}">{{ tag.title }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </p>
+    {% endif %}
     <p>Price: {{ price }}</p>
-    <h2>Decription:</h2> 
+    <h2>Decription:</h2>
     {% autoescape off %}
     <p>{{ desc | linebreaks }}</p>
     {% endautoescape %}
-</body>
-</html>
+{% endblock %}
