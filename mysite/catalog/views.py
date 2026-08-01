@@ -5,7 +5,7 @@ import datetime
 from django.urls import reverse
 from django.template.loader import render_to_string
 
-from .models import Catalog, Category
+from .models import Catalog, Category, Tag
 
 
 menu = [
@@ -58,7 +58,7 @@ def category_by_slug(request: HttpRequest, cat_slug: str) -> HttpResponse | Http
     try:
         data = {
             'title': cat.title,
-            'items_list': cat.catalog_set.all(),
+            'items_list': cat.catalog_set.filter(is_available=1),
         }
         return render(request, 'catalog/category.html', data)
 
@@ -96,12 +96,39 @@ def item_by_id(request: HttpRequest, item_id: int) -> HttpResponse | Http404:
     except Exception as exc:
         raise exc
 
-def archive(request: HttpRequest, year: int) -> HttpResponse | HttpResponseRedirect:
+def tag_by_slug(request, tag_slug) -> HttpResponse | Http404:
+    tag = get_object_or_404(Tag, slug=tag_slug)
+    try:
+        data = {
+            'title': tag.title,
+            'items_list': tag.catalog_set.all(),
+        }
+        return render(request, 'catalog/category.html', data)
+
+    except Exception as exc:
+        raise exc
+
+def tag_by_id(request, tag_id) -> HttpRequest | Http404:
+    tag = get_object_or_404(Tag, pk=tag_id)
+    try:
+        data = {
+            'title': tag.title,
+            'items_list': tag.catalog_set.all(),
+        }
+        return render(request, 'catalog/category.html', data)
+
+    except Exception as exc:
+        raise exc
+
+def archive(request, year) -> HttpResponse | Http404:
     if year > datetime.datetime.now().year:
-        uri = reverse('catalog_main')
-        return HttpResponseRedirect(uri)
-    
-    return HttpResponse(f'<h1>Archive</h1><p>Year: {year}<p/>')
+        return HttpResponseRedirect(reverse('catalog_main'))
+
+    data = {
+        'title': 'Main page',
+        'items_list': Catalog.objects.filter(created_at__year=year, is_available=0),
+    }
+    return render(request, 'catalog/tag.html', data)
 
 def page_not_found(request: HttpRequest, exception) -> HttpResponseNotFound:
     return HttpResponseNotFound(f"<h1>Page not found</h1><p>Description: {exception}</p>")

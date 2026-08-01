@@ -16,4 +16,6 @@ urlpatterns = [
     path('login/', login, name='login'),
     path('add_item/', add_item, name='catalog_add_item'),
     path('contact_us/', contact_us, name='contact_us'),
+    path('tag/<int:tag_id>/', tag_by_id, name='catalog_tag_id'),
+    path('tag/<slug:tag_slug>/', tag_by_slug, name='catalog_tag_slug'),
 ]

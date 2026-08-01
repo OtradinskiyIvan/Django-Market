@@ -10,7 +10,8 @@ class Catalog(models.Model):
         ARCHIVED = 0,
         AVAILABLE = 1,
 
-    category = models.ForeignKey('Category', on_delete=models.CASCADE)
+    category = models.ForeignKey('Category', on_delete=models.PROTECT)
+    tags = models.ManyToManyField('Tag', blank=True) 
     title = models.CharField(max_length=255)
     price = models.IntegerField()
     slug = models.SlugField(max_length=255, unique=True)
@@ -28,6 +29,12 @@ class Category(models.Model):
     slug = models.SlugField(max_length=255, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class Tag(models.Model):
+    title = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255, unique=True)
+    created_at =models.DateTimeField(auto_now_add=True)
 
 
 class Profile(models.Model):
