@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 
 from .models import Catalog, Category, Tag
+from .forms import *
 
 
 menu = [
@@ -24,28 +25,56 @@ def index(request: HttpRequest) -> HttpResponse:
     return render(request, 'catalog/index.html', data)
 
 def add_item(request: HttpRequest, ) -> HttpResponse:
+    if request.method == 'POST':
+        form = AddItemForm(request.POST)
+        if form.is_valid():
+            try:
+                data = form.cleaned_data.copy()
+                tag = data.pop('tags', None)
+                item = Catalog.objects.create(**data)
+                if tag:
+                    item.tags.set([tag]) 
+            except Exception as exc:
+                form.add_error(None, f'Failed to add item with exception as: {exc}')
+    else:
+        form = AddItemForm()
+
     data = {
         'title': 'Add item',
         'menu': menu,
-        'message': 'Stub add',
+        'form': form,
     }
-    return render(request, 'catalog/stub.html', data)
+    return render(request, 'catalog/add_item.html', data)
 
 def login(request: HttpRequest, ) -> HttpResponse:
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            print(form.cleaned_data)
+    else:
+        form = LoginForm()
+
     data = {
         'title': 'Login',
         'menu': menu,
-        'message': 'Stub login',
+        'form': form,
     }
-    return render(request, 'catalog/stub.html', data)
+    return render(request, 'catalog/login.html', data)
 
 def contact_us(request: HttpRequest, ) -> HttpResponse:
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            print(form.cleaned_data)
+    else:
+        form = ContactForm()
+
     data = {
         'title': 'Contact us',
         'menu': menu,
-        'message': 'Stub contact',
+        'form': form,
     }
-    return render(request, 'catalog/stub.html', data)
+    return render(request, 'catalog/contact.html', data)
 
 def about_us(request: HttpRequest) -> HttpResponse:
     data = {
