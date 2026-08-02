@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.auth.models import User
 
 class AvailabilityManeger(models.Manager):
     def get_queryset(self):
@@ -11,7 +10,7 @@ class Catalog(models.Model):
         AVAILABLE = 1,
 
     category = models.ForeignKey('Category', on_delete=models.PROTECT)
-    seller = models.ForeignKey('Profile', on_delete=models.CASCADE)
+    seller = models.ForeignKey('users.Profile', on_delete=models.CASCADE)
     tags = models.ManyToManyField('Tag', blank=True) 
     title = models.CharField(max_length=255)
     price = models.IntegerField()
@@ -47,26 +46,8 @@ class Tag(models.Model):
         return self.title
 
 
-class Profile(models.Model):
-    class Role(models.IntegerChoices):
-         CUSTOMER = 0, 'Customer'
-         SELLER = 1, 'Seller'
-
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255)
-    email = models.EmailField(unique=True, blank=False)
-    phone = models.CharField(max_length=255)
-    role = models.IntegerField(choices=Role.choices, default=Role.CUSTOMER)
-    is_verified = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-            return f"{self.Role.label} {self.name}"
-
-
 class Order(models.Model):
-    user = models.ForeignKey('Profile', on_delete=models.CASCADE,  related_name='orders')
+    user = models.ForeignKey('users.Profile', on_delete=models.CASCADE,  related_name='orders')
     is_shipped = models.BooleanField(default=False)
     shipped_at = models.DateTimeField(null=True, blank=True)
     is_closed = models.BooleanField(default=False)

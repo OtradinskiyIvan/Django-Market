@@ -19,6 +19,7 @@ from django.urls import path, include
 from catalog.views import page_not_found
 
 urlpatterns = [
+    path('users/', include('users.urls')),
     path('admin/', admin.site.urls),
     path('catalog/', include('catalog.urls')),
 ]

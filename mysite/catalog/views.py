@@ -46,21 +46,6 @@ def add_item(request: HttpRequest, ) -> HttpResponse:
     }
     return render(request, 'catalog/add_item.html', data)
 
-def login(request: HttpRequest, ) -> HttpResponse:
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            print(form.cleaned_data)
-    else:
-        form = LoginForm()
-
-    data = {
-        'title': 'Login',
-        'menu': menu,
-        'form': form,
-    }
-    return render(request, 'catalog/login.html', data)
-
 def contact_us(request: HttpRequest, ) -> HttpResponse:
     if request.method == 'POST':
         form = ContactForm(request.POST)
