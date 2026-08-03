@@ -1,22 +1,16 @@
-from django.http import HttpRequest, HttpResponse
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.views import LoginView
 from django.shortcuts import render, get_object_or_404
+from django.urls import reverse, reverse_lazy
 
 from .forms import *
 
-from catalog.views import menu
 
+class LoginUser(LoginView):
+    authentication_form = LoginForm
+    template_name = 'users/login.html'
+    extra = {'title': 'Authentication'}
 
-def login(request: HttpRequest, ) -> HttpResponse:
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            print(form.cleaned_data)
-    else:
-        form = LoginForm()
-
-    data = {
-        'title': 'Login',
-        'menu': menu,
-        'form': form,
-    }
-    return render(request, 'catalog/login.html', data)
+    def get_success_url(self):
+        return reverse_lazy('catalog_main')
+    

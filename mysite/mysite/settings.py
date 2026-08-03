@@ -34,6 +34,8 @@ if not DEBUG:
 
 ALLOWED_HOSTS = ['127.0.0.1']
 
+LOGOUT_REDIRECT_URL = 'login'
+
 
 # Application definition
 
@@ -72,6 +74,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'users.context_processors.get_catalog_context',
             ],
         },
     },
