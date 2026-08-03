@@ -61,6 +61,23 @@ body > h1 + ul:has(> li > a) li.last {
     margin-left: auto;
 }
 
+.menu-logout {
+    display: block;
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: #fff;
+    padding: 10px 20px;
+    font-family: inherit;
+    font-size: 0.95em;
+    cursor: pointer;
+    text-align: left;
+}
+
+.menu-logout:hover {
+    background: #3498db;
+}
+
 nav {
     background: #ecf0f1;
     padding: 10px 15px;

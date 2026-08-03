@@ -14,7 +14,14 @@
         <li><a href="{% url 'catalog_main' %}">Main page</a></li>
         {% for el in menu %}
         {% if not forloop.last %}<li>{% else %}<li class="last">{% endif %}
+            {% if el.url == 'logout' %}
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="menu-logout">{{ el.title }}</button>
+            </form>
+            {% else %}
             <a href="{% url el.url %}">{{ el.title }}</a>
+            {% endif %}
         </li>
         {% endfor %}
     </ul>
