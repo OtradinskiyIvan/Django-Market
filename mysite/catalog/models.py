@@ -67,3 +67,13 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"Order: {str(self.order)}; Item: {str(self.item)}"
+
+
+class ItemImage(models.Model):
+    item = models.ForeignKey(Catalog, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='items/images/')
+
+
+class ItemVideo(models.Model):
+    item = models.ForeignKey(Catalog, on_delete=models.CASCADE, related_name='video')
+    video = models.FileField(upload_to='items/video/')
