@@ -21,8 +21,8 @@ class MultipleFileField(forms.FileField):
 class AddItemForm(forms.Form):
     title = forms.CharField(max_length=255)
     slug = forms.SlugField(max_length=255, label='URL')
-    seller_id = forms.IntegerField()
     price = forms.IntegerField()
+    quantity = forms.IntegerField(initial=10, min_value=1)
     desc = forms.CharField(widget=forms.Textarea())
     is_available = forms.BooleanField(initial=True, required=False)
     category = forms.ModelChoiceField(queryset=Category.objects.all(), empty_label='Set category')
