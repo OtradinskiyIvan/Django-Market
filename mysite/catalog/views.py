@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404
 import datetime
@@ -18,6 +19,7 @@ def index(request: HttpRequest) -> HttpResponse:
     }
     return render(request, 'catalog/index.html', data)
 
+@login_required
 def add_item(request: HttpRequest, ) -> HttpResponse:
     if request.method == 'POST':
         form = AddItemForm(request.POST, request.FILES)
@@ -27,7 +29,10 @@ def add_item(request: HttpRequest, ) -> HttpResponse:
                 data.pop('images', None)
                 data.pop('video', None)
                 tag = data.pop('tags', None)
-                item = Catalog.objects.create(**data)
+                item = Catalog.objects.create(
+                    seller=request.user.profile,
+                    **data,
+                )
 
                 if tag:
                     item.tags.set([tag])
