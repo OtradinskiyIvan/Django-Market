@@ -14,6 +14,7 @@ class Catalog(models.Model):
     tags = models.ManyToManyField('Tag', blank=True) 
     title = models.CharField(max_length=255)
     price = models.IntegerField()
+    quantity = models.PositiveIntegerField(default=10)
     slug = models.SlugField(max_length=255, unique=True)
     desc = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
