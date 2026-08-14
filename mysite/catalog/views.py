@@ -20,14 +20,22 @@ def index(request: HttpRequest) -> HttpResponse:
 
 def add_item(request: HttpRequest, ) -> HttpResponse:
     if request.method == 'POST':
-        form = AddItemForm(request.POST)
+        form = AddItemForm(request.POST, request.FILES)
         if form.is_valid():
             try:
                 data = form.cleaned_data.copy()
+                data.pop('images', None)
+                data.pop('video', None)
                 tag = data.pop('tags', None)
                 item = Catalog.objects.create(**data)
+
                 if tag:
-                    item.tags.set([tag]) 
+                    item.tags.set([tag])
+                for file in request.FILES.getlist('images'):
+                    item.images.create(image=file)
+                if video := request.FILES.get('video'):
+                    item.video.create(video=video)
+
             except Exception as exc:
                 form.add_error(None, f'Failed to add item with exception as: {exc}')
     else:
@@ -102,6 +110,7 @@ def item_by_slug(request: HttpRequest, item_slug: str) -> HttpResponse | Http404
             'price': item.price,
             'desc': item.desc,
             'tags': item.tags.all(),
+            'item': item,
         }
         return render(request, 'catalog/item.html', data)
 
@@ -119,6 +128,7 @@ def item_by_id(request: HttpRequest, item_id: int) -> HttpResponse | Http404:
             'price': item.price,
             'desc': item.desc,
             'tags': item.tags.all(),
+            'item': item,
         }
         return render(request, 'catalog/item.html', data)
 
