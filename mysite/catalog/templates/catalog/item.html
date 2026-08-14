@@ -9,6 +9,20 @@
             {% endfor %}
         </p>
     {% endif %}
+    {% if item.images.all %}
+        <h3>Images:</h3>
+        {% for img in item.images.all %}
+            <img src="{{ img.image.url }}" alt="" width="200">
+        {% endfor %}
+    {% endif %}
+
+    {% if item.video.all %}
+        <h3>Video:</h3>
+        {% for video in item.video.all %}
+            <video controls src="{{ video.video.url }}" width="400"></video>
+        {% endfor %}
+    {% endif %}
+    
     <p>Price: {{ price }}</p>
     <h2>Decription:</h2>
     {% autoescape off %}

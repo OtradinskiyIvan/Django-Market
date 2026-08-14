@@ -6,6 +6,9 @@
         <li>
             <strong>{{ item.title }}</strong> — {{ item.price }} rub.
             <p>(Category: {{ item.category.title }})</p>
+            {% if item.images.all %}
+                <img src="{{ item.images.first.image.url }}" alt="" width="80">
+            {% endif %}
             <p><a href="{% url 'catalog_item_id' item.id %}">Show more</a></p>
         </li>
     {% empty %}
