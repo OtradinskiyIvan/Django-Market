@@ -1,7 +1,8 @@
 from django import forms
 from .models import Profile
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth.models import User
 
 from phonenumber_field.formfields import PhoneNumberField
 
@@ -24,7 +25,62 @@ class AuthForm(AuthenticationForm):
 
 
 class LoginForm(AuthenticationForm):
+    username = forms.CharField(label='Username or email')
+
     class Meta:
         model = get_user_model()
         fields = ['username', 'password']
 
+    def clean(self):
+        username = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+        if username is not None and password:
+            self.user_cache = authenticate(
+                self.request,
+                username=username,
+                email=username,
+                password=password,
+            )
+
+            if self.user_cache is None:
+                raise self.get_invalid_login_error()
+            else:
+                self.confirm_login_allowed(self.user_cache)
+
+class RegisterForm(UserCreationForm):
+    name = forms.CharField(max_length=255)
+    email = forms.EmailField()
+    phone = PhoneNumberField()
+    role = forms.ChoiceField(choices=Profile.Role.choices)
+
+    class Meta:
+        model = User
+        fields = ['username', 'email']
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if get_user_model().objects.filter(email=email).exists():
+            raise forms.ValidationError('Email already registered')
+        return email
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone')
+        if phone and Profile.objects.filter(phone=str(phone)).exists():
+            raise forms.ValidationError('Phone already registered')
+        return phone
+
+
+class ProfileForm(forms.ModelForm):
+    username = forms.CharField(disabled=True, label='Username')
+    email = forms.EmailField(disabled=True, label='Email')
+
+    class Meta:
+        model = Profile
+        fields = ['phone', 'name']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields['username'].initial = self.instance.user.username
+            self.fields['email'].initial = self.instance.user.email
+    
