@@ -16,4 +16,6 @@
         <p><strong>Balance:</strong> {{ user.profile.balance }}</p>
         <p><strong>Registered:</strong> {{ user.profile.created_at|date:"d M Y" }}</p>
     </div>
+    <hr>
+    <p><a href="{% url 'password_change' %}">Change password</a></p>
 {% endblock %}
