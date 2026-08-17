@@ -10,8 +10,7 @@ class Profile(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
-    email = models.EmailField(unique=True, blank=False)
-    phone = models.CharField(max_length=255)
+    phone = models.CharField(max_length=255, unique=True, null=True)
     role = models.IntegerField(choices=Role.choices, default=Role.CUSTOMER)
     is_verified = models.BooleanField(default=False)
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
