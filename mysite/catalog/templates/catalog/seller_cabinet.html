@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>{{ title }}</h1>
+    <p><strong>Balance:</strong> {{ balance }}</p>
+    <p><a href="{% url 'seller_stock' %}">Stock management</a></p>
+    <p><a href="{% url 'seller_orders' %}">Orders</a></p>
+    <h2>Sales statistics</h2>
+    <ul>
+    {% for s in stats %}
+        <li><strong>{{ s.item__title }}</strong> — sold: {{ s.total_qty }} pcs, revenue: {{ s.revenue }} rub.</li>
+    {% empty %}
+        <li>No sales yet.</li>
+    {% endfor %}
+    </ul>
+{% endblock %}

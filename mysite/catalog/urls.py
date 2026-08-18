@@ -23,4 +23,8 @@ urlpatterns = [
     path('orders/', orders, name='orders'),
     path('favorites/', favorites, name='favorites'),
     path('favorites/toggle/<int:item_id>/', favorite_toggle, name='favorite_toggle'),
+    path('seller/cabinet/', seller_cabinet, name='seller_cabinet'),
+    path('seller/stock/', seller_stock, name='seller_stock'),
+    path('seller/stock/<int:item_id>/', stock_change, name='stock_change'),
+    path('seller/orders/', seller_orders, name='seller_orders'),
 ]

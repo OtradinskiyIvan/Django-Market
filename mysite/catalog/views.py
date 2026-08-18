@@ -1,7 +1,9 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import F, Sum
 from django.http import HttpRequest, HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404
 from django.shortcuts import redirect, render, get_object_or_404
+from functools import wraps
 import datetime
 
 from django.urls import reverse
@@ -12,6 +14,17 @@ from .utils import menu
 
 from .models import Catalog, Category, Tag
 from .forms import *
+
+
+def seller_required(view_func):
+    @wraps(view_func)
+    def _wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        if request.user.profile.role != Profile.Role.SELLER:
+            return render(request, 'catalog/access_denied.html', {'title': 'Access denied', 'menu': menu})
+        return view_func(request, *args, **kwargs)
+    return _wrapper
 
 
 def index(request: HttpRequest) -> HttpResponse:
@@ -254,3 +267,60 @@ def favorites(request):
     items_list = request.user.profile.favorites.all()
     data = {'title': 'Favorites', 'menu': menu, 'items_list': items_list}
     return render(request, 'catalog/favorites.html', data)
+
+@seller_required
+def seller_cabinet(request):
+    profile = request.user.profile
+    stats = (OrderItem.objects
+             .filter(item__seller=profile)
+             .values('item_id', 'item__title')
+             .annotate(total_qty=Sum('quantity'),
+                       revenue=Sum(F('quantity') * F('price')))
+             .order_by('-revenue'))
+    data = {
+        'title': 'Seller cabinet',
+        'menu': menu,
+        'balance': profile.balance,
+        'stats': stats,
+    }
+    return render(request, 'catalog/seller_cabinet.html', data)
+
+@seller_required
+def seller_stock(request):
+    items = (Catalog.objects
+             .filter(seller=request.user.profile)
+             .order_by('-created_at'))
+    data = {'title': 'Seller stock', 'menu': menu, 'items': items}
+    return render(request, 'catalog/seller_stock.html', data)
+
+@seller_required
+def stock_change(request, item_id):
+    item = get_object_or_404(Catalog, pk=item_id)
+    if item.seller_id != request.user.profile.id:
+        return redirect('seller_stock')
+    action = request.POST.get('action', 'inc')
+    try:
+        amount = int(request.POST.get('amount', 1))
+    except (TypeError, ValueError):
+        amount = 1
+    amount = max(0, amount)
+    delta = -amount if action == 'dec' else amount
+    item.quantity = max(0, item.quantity + delta)
+    if item.quantity == 0:
+        item.is_available = Catalog.Status.ARCHIVED
+    elif item.is_available != Catalog.Status.AVAILABLE:
+        item.is_available = Catalog.Status.AVAILABLE
+    item.save(update_fields=['quantity', 'is_available'])
+    messages.success(request, f'{item.title}: quantity = {item.quantity}')
+    return redirect('seller_stock')
+
+@seller_required
+def seller_orders(request):
+    profile = request.user.profile
+    orders_list = (Order.objects
+                   .filter(orderitem__item__seller=profile)
+                   .distinct()
+                   .order_by('-created_at')
+                   .prefetch_related('orderitem_set__item'))
+    data = {'title': 'Seller orders', 'menu': menu, 'orders': orders_list, 'profile': profile}
+    return render(request, 'catalog/seller_orders.html', data)
