@@ -26,6 +26,9 @@
     <li><a href="{% url 'cart' %}">Cart ({{ cart_count }})</a></li>
     <li><a href="{% url 'favorites' %}">Favorites</a></li>
     <li><a href="{% url 'orders' %}">My orders</a></li>
+    {% if is_seller %}
+    <li><a href="{% url 'seller_cabinet' %}">Seller cabinet</a></li>
+    {% endif %}
     <li>
         <form action="{% url 'logout' %}" method="post">
             {% csrf_token %}

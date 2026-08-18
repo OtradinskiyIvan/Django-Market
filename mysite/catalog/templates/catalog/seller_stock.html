@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>{{ title }}</h1>
+    <ul>
+    {% for item in items %}
+        <li>
+            <strong>{{ item.title }}</strong> — {{ item.price }} rub.
+            | Quantity: {{ item.quantity }}
+            | Status: {% if item.is_available %}Available{% else %}Archived{% endif %}
+            <form action="{% url 'stock_change' item.pk %}" method="post" style="display:inline">
+                {% csrf_token %}
+                <input type="number" name="amount" value="1" min="0">
+                <button type="submit" name="action" value="inc">+</button>
+                <button type="submit" name="action" value="dec">−</button>
+            </form>
+            <p><a href="{% url 'catalog_item_id' item.id %}">Show item</a></p>
+        </li>
+    {% empty %}
+        <li>You have no items yet. <a href="{% url 'catalog_add_item' %}">Add item</a></li>
+    {% endfor %}
+    </ul>
+{% endblock %}
