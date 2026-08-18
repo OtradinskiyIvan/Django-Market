@@ -24,6 +24,14 @@
     {% endif %}
     
     <p>Price: {{ price }}</p>
+    <form action="{% url 'favorite_toggle' item.pk %}" method="post">
+        {% csrf_token %}
+        {% if user.is_authenticated and item in user.profile.favorites.all %}
+            <button type="submit">Remove from favorites</button>
+        {% else %}
+            <button type="submit">Add to favorites</button>
+        {% endif %}
+    </form>
     <h2>Decription:</h2>
     {% autoescape off %}
     <p>{{ desc | linebreaks }}</p>

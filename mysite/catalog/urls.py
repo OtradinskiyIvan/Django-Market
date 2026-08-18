@@ -21,4 +21,6 @@ urlpatterns = [
     path('cart/remove/<int:item_id>/', cart_remove, name='cart_remove'),
     path('checkout/', checkout, name='checkout'),
     path('orders/', orders, name='orders'),
+    path('favorites/', favorites, name='favorites'),
+    path('favorites/toggle/<int:item_id>/', favorite_toggle, name='favorite_toggle'),
 ]

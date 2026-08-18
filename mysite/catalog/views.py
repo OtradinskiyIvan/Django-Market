@@ -186,9 +186,10 @@ def page_not_found(request: HttpRequest, exception) -> HttpResponseNotFound:
 @login_required
 def cart_add(request, item_id):
     item = get_object_or_404(Catalog, pk=item_id)
+    next_url = request.POST.get('next')
     if item.seller_id == request.user.profile.id:
         messages.error(request, 'Cannot buy your own item')
-        return redirect('catalog_item_id', item_id=item_id)
+        return redirect(next_url or reverse('catalog_item_id', args=[item_id]))
     form = CartAddForm(request.POST)
     if form.is_valid():
         qty = form.cleaned_data['quantity']
@@ -197,7 +198,7 @@ def cart_add(request, item_id):
         else:
             add_to_cart(request, item_id, qty)
             messages.success(request, f'{item.title} added to cart')
-    return redirect('catalog_item_id', item_id=item_id)
+    return redirect(next_url or reverse('catalog_item_id', args=[item_id]))
 
 @login_required
 def cart_remove(request, item_id):
@@ -235,3 +236,21 @@ def orders(request):
                    .order_by('-created_at'))
     data = {'title': 'My orders', 'menu': menu, 'orders': orders_list}
     return render(request, 'catalog/orders.html', data)
+
+@login_required
+def favorite_toggle(request, item_id):
+    item = get_object_or_404(Catalog, pk=item_id)
+    profile = request.user.profile
+    if profile.favorites.filter(pk=item.pk).exists():
+        profile.favorites.remove(item)
+        messages.success(request, f'{item.title} removed from favorites')
+    else:
+        profile.favorites.add(item)
+        messages.success(request, f'{item.title} added to favorites')
+    return redirect('catalog_item_id', item_id=item_id)
+
+@login_required
+def favorites(request):
+    items_list = request.user.profile.favorites.all()
+    data = {'title': 'Favorites', 'menu': menu, 'items_list': items_list}
+    return render(request, 'catalog/favorites.html', data)
