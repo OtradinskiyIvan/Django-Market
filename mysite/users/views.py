@@ -8,7 +8,8 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
 from django.db import transaction
 from django.db.models import Q
-from django.shortcuts import redirect
+from django.db.models import Avg
+from django.shortcuts import redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render
@@ -18,7 +19,7 @@ from django.utils.encoding import force_bytes, force_str
 from django.views.generic import CreateView, UpdateView
 
 from .forms import *
-from .models import Profile
+from .models import Profile, SellerReview
 
 
 class LoginUser(LoginView):
@@ -105,3 +106,46 @@ def topup(request: HttpRequest) -> HttpResponse:
         profile.save(update_fields=['balance'])
         messages.success(request, 'Balance topped up')
     return redirect('profile')
+
+
+def user_page(request: HttpRequest, profile_id: int) -> HttpResponse:
+    profile = get_object_or_404(Profile, pk=profile_id)
+    if request.user.is_authenticated and profile.pk == request.user.profile.pk:
+        return redirect('profile')
+
+    data = {
+        'title': profile.name,
+        'profile': profile,
+        'avg_rating': None,
+        'reviews': [],
+        'form': None,
+    }
+    if profile.role == Profile.Role.SELLER:
+        avg = profile.review_received.aggregate(Avg('rating'))['rating__avg']
+        data['avg_rating'] = avg
+        data['reviews'] = profile.review_received.select_related('customer').order_by('-created_at')
+        if request.user.is_authenticated:
+            data['form'] = SellerReviewForm()
+    return render(request, 'users/user_page.html', data)
+
+
+@login_required
+def leave_review(request: HttpRequest, profile_id: int) -> HttpResponse:
+    seller = get_object_or_404(Profile, pk=profile_id)
+    if seller.pk == request.user.profile.pk:
+        messages.error(request, 'You cannot review yourself')
+        return redirect('user_page', profile_id)
+    form = SellerReviewForm(request.POST)
+    if form.is_valid():
+        SellerReview.objects.update_or_create(
+            customer=request.user.profile,
+            seller=seller,
+            defaults={
+                'rating': form.cleaned_data['rating'],
+                'comment': form.cleaned_data['comment'],
+            },
+        )
+        messages.success(request, 'Review saved')
+    else:
+        messages.error(request, 'Invalid review data')
+    return redirect('user_page', profile_id)

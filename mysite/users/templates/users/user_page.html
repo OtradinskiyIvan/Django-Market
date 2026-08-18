@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>{{ profile.name }}</h1>
+    {% if profile.role == 1 %}
+        <p><strong>Average rating:</strong> {{ avg_rating|floatformat:1|default:"no ratings yet" }}</p>
+        {% if reviews %}
+            <p>{{ reviews|length }} review(s)</p>
+            <ul>
+            {% for r in reviews %}
+                <li>
+                    <strong>{{ r.rating }}/5</strong> by {{ r.customer.name }}
+                    ({{ r.created_at|date:"d M Y" }})
+                    {% if r.comment %}<br>{{ r.comment }}{% endif %}
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No reviews yet.</p>
+        {% endif %}
+        {% if form %}
+            <h2>Leave a review</h2>
+            <form action="{% url 'leave_review' profile.pk %}" method="post">
+                {% csrf_token %}
+                <p><label for="{{ form.rating.id_for_label }}">Rating:</label> {{ form.rating }}</p>
+                <p><label for="{{ form.comment.id_for_label }}">Comment:</label> {{ form.comment }}</p>
+                <button type="submit">Submit review</button>
+            </form>
+        {% endif %}
+    {% else %}
+        <p><strong>Customer since:</strong> {{ profile.created_at|date:"d M Y" }}</p>
+    {% endif %}
+{% endblock %}

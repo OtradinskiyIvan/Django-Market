@@ -31,4 +31,6 @@ path('password-reset/', PasswordResetView.as_view(
 ), name='password_reset'),
 path('register/done/', register_done, name='register_done'),
 path('verify/<uidb64>/<token>/', verify_email, name='verify_email'),
+path('<int:profile_id>/', user_page, name='user_page'),
+path('<int:profile_id>/review/', leave_review, name='leave_review'),
 ]

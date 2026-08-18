@@ -12,4 +12,15 @@
         <li>No sales yet.</li>
     {% endfor %}
     </ul>
+    <h2>Rating</h2>
+    <p><strong>Average:</strong> {{ avg_rating|floatformat:1|default:"no ratings yet" }}</p>
+    <ul>
+    {% for r in reviews %}
+        <li><strong>{{ r.rating }}/5</strong> by {{ r.customer.name }} ({{ r.created_at|date:"d M Y" }})
+            {% if r.comment %}<br>{{ r.comment }}{% endif %}
+        </li>
+    {% empty %}
+        <li>No reviews yet.</li>
+    {% endfor %}
+    </ul>
 {% endblock %}

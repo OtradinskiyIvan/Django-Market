@@ -11,7 +11,7 @@
 <body>
     <div class="user-label">
     {% if user.is_authenticated %}
-        {{ user.username }}
+        <a href="{% url 'user_page' user.profile.pk %}">{{ user.username }}</a>
     {% else %}
         Guest
     {% endif %}
