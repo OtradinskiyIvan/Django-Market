@@ -1,5 +1,5 @@
 from django import forms
-from .models import Profile
+from .models import Profile, SellerReview
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.models import User
@@ -94,4 +94,14 @@ class ProfileForm(forms.ModelForm):
 
 class TopUpForm(forms.Form):
     amount = forms.DecimalField(min_value=0.01, max_digits=10, decimal_places=2, label='Amount')
+
+
+class SellerReviewForm(forms.ModelForm):
+    class Meta:
+        model = SellerReview
+        fields = ['rating', 'comment']
+        widgets = {
+            'rating': forms.Select(choices=[(i, i) for i in range(1, 6)]),
+            'comment': forms.Textarea(attrs={'rows': 4}),
+        }
     

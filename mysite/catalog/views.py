@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import F, Sum
+from django.db.models import Avg, F, Sum
 from django.http import HttpRequest, HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404
 from django.shortcuts import redirect, render, get_object_or_404
 from functools import wraps
@@ -282,6 +282,8 @@ def seller_cabinet(request):
         'menu': menu,
         'balance': profile.balance,
         'stats': stats,
+        'avg_rating': profile.review_received.aggregate(Avg('rating'))['rating__avg'],
+        'reviews': profile.review_received.select_related('customer').order_by('-created_at'),
     }
     return render(request, 'catalog/seller_cabinet.html', data)
 
