@@ -80,6 +80,7 @@ class RegisterForm(UserCreationForm):
 class ProfileForm(forms.ModelForm):
     username = forms.CharField(disabled=True, label='Username')
     email = forms.EmailField(disabled=True, label='Email')
+    phone = PhoneNumberField(required=False, label='Phone')
 
     class Meta:
         model = Profile
@@ -93,6 +94,10 @@ class ProfileForm(forms.ModelForm):
 
 
 class TopUpForm(forms.Form):
+    amount = forms.DecimalField(min_value=0.01, max_digits=10, decimal_places=2, label='Amount')
+
+
+class WithdrawForm(forms.Form):
     amount = forms.DecimalField(min_value=0.01, max_digits=10, decimal_places=2, label='Amount')
 
 

@@ -2,6 +2,7 @@
 {% block content %}
     <h1>{{ title }}</h1>
     <p><strong>Balance:</strong> {{ balance }}</p>
+    <p><strong>Pending payout:</strong> {{ pending }}</p>
     <p><a href="{% url 'seller_stock' %}">Stock management</a></p>
     <p><a href="{% url 'seller_orders' %}">Orders</a></p>
     <h2>Sales statistics</h2>

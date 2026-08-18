@@ -48,10 +48,15 @@ class Tag(models.Model):
 
 
 class Order(models.Model):
+    class Status(models.IntegerChoices):
+        ORDERED = 0
+        SHIPPED = 1
+        ACCEPTED = 2
+        DECLINED = 3
+
     user = models.ForeignKey('users.Profile', on_delete=models.CASCADE,  related_name='orders')
-    is_shipped = models.BooleanField(default=False)
+    status = models.IntegerField(choices=Status.choices, default=Status.ORDERED)
     shipped_at = models.DateTimeField(null=True, blank=True)
-    is_closed = models.BooleanField(default=False)
     closed_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

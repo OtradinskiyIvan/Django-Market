@@ -4,13 +4,24 @@
     {% for order in orders %}
         <div>
             <p>Order #{{ order.pk }} — {{ order.created_at|date:"d M Y H:i" }}
-               {% if order.is_shipped %}| Shipped{% endif %}
-               {% if order.is_closed %}| Closed{% endif %}</p>
+               | Status: {{ order.get_status_display }}</p>
             <ul>
             {% for oi in order.orderitem_set.all %}
                 <li>{{ oi.item.title }} — {{ oi.price }} x {{ oi.quantity }} = {{ oi.line_total }}</li>
             {% endfor %}
             <p>Total: {{ order.total }}</p>
+            {% if order.status == 1 %}
+            <form action="{% url 'order_accept' order.pk %}" method="post">
+                {% csrf_token %}
+                <button type="submit">Accept order</button>
+            </form>
+            {% endif %}
+            {% if order.status == 0 or order.status == 1 %}
+            <form action="{% url 'order_decline' order.pk %}" method="post">
+                {% csrf_token %}
+                <button type="submit">Decline order</button>
+            </form>
+            {% endif %}
             </ul>
         </div>
     {% empty %}

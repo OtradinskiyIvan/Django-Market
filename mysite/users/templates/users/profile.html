@@ -24,6 +24,17 @@
             <button type="submit">Top up</button>
         </form>
     </div>
+    <div class="withdraw-form">
+        <form action="{% url 'withdraw' %}" method="post">
+            {% csrf_token %}
+            <label>Withdraw:</label>
+            <span class="withdraw-controls">
+                <input type="number" name="amount" step="0.01" min="0.01" value="100">
+                <button type="submit">Withdraw</button>
+                {% for m in messages %}{% if 'error' in m.tags %}<div class="form-error">{{ m }}</div>{% endif %}{% endfor %}
+            </span>
+        </form>
+    </div>
     <p><a href="{% url 'orders' %}">My orders</a></p>
     <p><a href="{% url 'cart' %}">Cart</a></p>
     <p><a href="{% url 'favorites' %}">Favorites</a></p>
