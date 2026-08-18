@@ -90,4 +90,8 @@ class ProfileForm(forms.ModelForm):
         if self.instance and self.instance.pk:
             self.fields['username'].initial = self.instance.user.username
             self.fields['email'].initial = self.instance.user.email
+
+
+class TopUpForm(forms.Form):
+    amount = forms.DecimalField(min_value=0.01, max_digits=10, decimal_places=2, label='Amount')
     

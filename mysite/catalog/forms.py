@@ -57,4 +57,7 @@ class AddItemForm(forms.Form):
 
 class ContactForm(forms.Form):
     message = forms.CharField(widget=forms.Textarea())
-    
+
+
+class CartAddForm(forms.Form):
+    quantity = forms.IntegerField(min_value=1, initial=1, label='Quantity')

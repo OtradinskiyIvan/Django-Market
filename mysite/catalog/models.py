@@ -59,6 +59,10 @@ class Order(models.Model):
     def __str__(self):
         return "Order id:" + str(self.pk)
 
+    @property
+    def total(self):
+        return sum(oi.line_total for oi in self.orderitem_set.all())
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey('Order', on_delete=models.CASCADE)
@@ -68,6 +72,10 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"Order: {str(self.order)}; Item: {str(self.item)}"
+
+    @property
+    def line_total(self):
+        return self.price * self.quantity
 
 
 class ItemImage(models.Model):

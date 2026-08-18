@@ -24,8 +24,25 @@
     {% endif %}
     
     <p>Price: {{ price }}</p>
+    <form action="{% url 'favorite_toggle' item.pk %}" method="post">
+        {% csrf_token %}
+        {% if user.is_authenticated and item in user.profile.favorites.all %}
+            <button type="submit">Remove from favorites</button>
+        {% else %}
+            <button type="submit">Add to favorites</button>
+        {% endif %}
+    </form>
     <h2>Decription:</h2>
     {% autoescape off %}
     <p>{{ desc | linebreaks }}</p>
+    {% if user.is_authenticated and item.seller.user_id != user.id %}
+    <p>In stock: {{ item.quantity }}</p>
+    <form action="{% url 'cart_add' item.pk %}" method="post">
+        {% csrf_token %}
+        <label>Quantity:</label>
+        <input type="number" name="quantity" value="1" min="1" max="{{ item.quantity }}">
+        <button type="submit">Add to cart</button>
+    </form>
+    {% endif %}
     {% endautoescape %}
 {% endblock %}

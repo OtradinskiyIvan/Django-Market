@@ -4,4 +4,5 @@ from catalog.utils import menu
 
 
 def get_catalog_context(request: HttpRequest):
-    return {'menu': menu}
+    cart = request.session.get('cart', {})
+    return {'menu': menu, 'cart_count': sum(cart.values())}

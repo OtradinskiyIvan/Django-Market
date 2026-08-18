@@ -23,6 +23,9 @@
     <li><a href="{% url el.url %}">{{ el.title }}</a></li>
     {% endfor %}
     {% if user.is_authenticated %}
+    <li><a href="{% url 'cart' %}">Cart ({{ cart_count }})</a></li>
+    <li><a href="{% url 'favorites' %}">Favorites</a></li>
+    <li><a href="{% url 'orders' %}">My orders</a></li>
     <li>
         <form action="{% url 'logout' %}" method="post">
             {% csrf_token %}

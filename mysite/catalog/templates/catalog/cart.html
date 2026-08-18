@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>{{ title }}</h1>
+    {% for item, qty, line_total in lines %}
+        <p>{{ item.title }} — {{ item.price }} x {{ qty }} = {{ line_total }}
+        <form action="{% url 'cart_add' item.pk %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{% url 'cart' %}">
+            <input type="number" name="quantity" value="{{ qty }}" min="1" max="{{ item.quantity }}">
+            <button type="submit">Update</button>
+        </form>
+        <form action="{% url 'cart_remove' item.pk %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Remove</button>
+        </form></p>
+    {% empty %}
+        <p>Cart is empty</p>
+    {% endfor %}
+    {% if lines %}
+        <p><strong>Total: {{ total }}</strong></p>
+        <p>Balance: {{ balance }}</p>
+        {% for m in messages %}{% if 'error' in m.tags %}<p class="form-error">{{ m }}</p>{% endif %}{% endfor %}
+        <form action="{% url 'checkout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Pay</button>
+        </form>
+    {% endif %}
+{% endblock %}

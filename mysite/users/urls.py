@@ -11,6 +11,7 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('register/', RegisterUser.as_view(), name='register'),
     path('profile/', ProfileUser.as_view(), name='profile'),
+    path('profile/topup/', topup, name='topup'),
 path('password-change/', PasswordChangeView.as_view(
     template_name='users/password_change_form.html'), name='password_change'),
 path('password-change/done/', PasswordChangeDoneView.as_view(
