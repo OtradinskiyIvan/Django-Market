@@ -1,6 +1,7 @@
 from collections import defaultdict
 
 from django.db import transaction
+from django.utils import timezone
 
 from users.models import Profile
 from .models import *
@@ -26,22 +27,50 @@ def create_order(profile, items):
             raise ValueError('Not enough balance')
         
         order = Order.objects.create(user=profile)
-        seller_totals = defaultdict(int)
         for item, qty in locked:
             OrderItem.objects.create(order=order, item=item, quantity=qty, price=item.price)
             item.quantity -= qty
             if item.quantity == 0:
                 item.is_available = Catalog.Status.ARCHIVED
             item.save()
-            seller_totals[item.seller_id] += item.price * qty
 
         profile.balance -= total
         profile.save()
+    return order
 
+
+def accept_order(order):
+    with transaction.atomic():
+        order = Order.objects.select_for_update().get(pk=order.pk)
+        if order.status != Order.Status.SHIPPED:
+            return
+        seller_totals = defaultdict(int)
+        for oi in order.orderitem_set.select_related('item'):
+            seller_totals[oi.item.seller_id] += oi.price * oi.quantity
         for seller in Profile.objects.select_for_update().filter(pk__in=seller_totals):
             seller.balance += seller_totals[seller.pk]
             seller.save()
-    return order
+        order.status = Order.Status.ACCEPTED
+        order.closed_at = timezone.now()
+        order.save(update_fields=['status', 'closed_at'])
+
+
+def decline_order(order):
+    with transaction.atomic():
+        order = Order.objects.select_for_update().get(pk=order.pk)
+        if order.status not in (Order.Status.ORDERED, Order.Status.SHIPPED):
+            return
+        buyer = Profile.objects.select_for_update().get(pk=order.user_id)
+        buyer.balance += order.total
+        buyer.save()
+        for oi in order.orderitem_set.all():
+            item = Catalog.objects.select_for_update().get(pk=oi.item_id)
+            item.quantity += oi.quantity
+            if item.is_available != Catalog.Status.AVAILABLE:
+                item.is_available = Catalog.Status.AVAILABLE
+            item.save()
+        order.status = Order.Status.DECLINED
+        order.save(update_fields=['status'])
 
 def get_cart(request):
     return request.session.get('cart', {})

@@ -108,6 +108,21 @@ def topup(request: HttpRequest) -> HttpResponse:
     return redirect('profile')
 
 
+@login_required
+def withdraw(request: HttpRequest) -> HttpResponse:
+    form = WithdrawForm(request.POST)
+    if form.is_valid():
+        profile = request.user.profile
+        amount = form.cleaned_data['amount']
+        if amount > profile.balance:
+            messages.error(request, 'Not enough funds')
+        else:
+            profile.balance -= amount
+            profile.save(update_fields=['balance'])
+            messages.success(request, 'Withdrawn')
+    return redirect('profile')
+
+
 def user_page(request: HttpRequest, profile_id: int) -> HttpResponse:
     profile = get_object_or_404(Profile, pk=profile_id)
     if request.user.is_authenticated and profile.pk == request.user.profile.pk:

@@ -8,6 +8,7 @@ import datetime
 
 from django.urls import reverse
 from django.template.loader import render_to_string
+from django.utils import timezone
 
 from .services import *
 from .utils import menu
@@ -243,6 +244,34 @@ def checkout(request):
     return redirect('cart')
 
 @login_required
+def order_accept(request, order_id):
+    order = get_object_or_404(Order, pk=order_id, user=request.user.profile)
+    accept_order(order)
+    return redirect('orders')
+
+
+@login_required
+def order_decline(request, order_id):
+    order = get_object_or_404(Order, pk=order_id, user=request.user.profile)
+    decline_order(order)
+    return redirect('orders')
+
+
+@seller_required
+def order_ship(request, order_id):
+    profile = request.user.profile
+    order = get_object_or_404(
+        Order.objects.filter(orderitem__item__seller=profile).distinct(),
+        pk=order_id,
+    )
+    if order.status == Order.Status.ORDERED:
+        order.status = Order.Status.SHIPPED
+        order.shipped_at = timezone.now()
+        order.save(update_fields=['status', 'shipped_at'])
+    return redirect('seller_orders')
+
+
+@login_required
 def orders(request):
     orders_list = (request.user.profile.orders
                    .prefetch_related('orderitem_set__item')
@@ -277,10 +306,15 @@ def seller_cabinet(request):
              .annotate(total_qty=Sum('quantity'),
                        revenue=Sum(F('quantity') * F('price')))
              .order_by('-revenue'))
+    pending = (OrderItem.objects
+               .filter(item__seller=profile,
+                       order__status__in=[Order.Status.ORDERED, Order.Status.SHIPPED])
+               .aggregate(p=Sum(F('quantity') * F('price')))['p'] or 0)
     data = {
         'title': 'Seller cabinet',
         'menu': menu,
         'balance': profile.balance,
+        'pending': pending,
         'stats': stats,
         'avg_rating': profile.review_received.aggregate(Avg('rating'))['rating__avg'],
         'reviews': profile.review_received.select_related('customer').order_by('-created_at'),

@@ -21,10 +21,13 @@ urlpatterns = [
     path('cart/remove/<int:item_id>/', cart_remove, name='cart_remove'),
     path('checkout/', checkout, name='checkout'),
     path('orders/', orders, name='orders'),
+    path('orders/accept/<int:order_id>/', order_accept, name='order_accept'),
+    path('orders/decline/<int:order_id>/', order_decline, name='order_decline'),
     path('favorites/', favorites, name='favorites'),
     path('favorites/toggle/<int:item_id>/', favorite_toggle, name='favorite_toggle'),
     path('seller/cabinet/', seller_cabinet, name='seller_cabinet'),
     path('seller/stock/', seller_stock, name='seller_stock'),
     path('seller/stock/<int:item_id>/', stock_change, name='stock_change'),
     path('seller/orders/', seller_orders, name='seller_orders'),
+    path('seller/orders/ship/<int:order_id>/', order_ship, name='order_ship'),
 ]

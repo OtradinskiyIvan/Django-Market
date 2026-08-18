@@ -4,6 +4,7 @@
     {% for order in orders %}
         <div>
             <p>Order #{{ order.pk }} — {{ order.created_at|date:"d M Y H:i" }}
+               | Status: {{ order.get_status_display }}
                | Buyer: <a href="{% url 'user_page' order.user.pk %}">{{ order.user.name }}</a></p>
             <ul>
             {% for oi in order.orderitem_set.all %}
@@ -11,6 +12,12 @@
                     <li>{{ oi.item.title }} — {{ oi.price }} x {{ oi.quantity }} = {{ oi.line_total }}</li>
                 {% endif %}
             {% endfor %}
+            {% if order.status == 0 %}
+            <form action="{% url 'order_ship' order.pk %}" method="post">
+                {% csrf_token %}
+                <button type="submit">Ship order</button>
+            </form>
+            {% endif %}
             </ul>
         </div>
     {% empty %}
