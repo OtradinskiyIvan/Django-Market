@@ -9,28 +9,32 @@
     <link href="{% static 'catalog/css/style.css' %}" rel="stylesheet" />
 </head>
 <body>
+    <div class="user-label">
+    {% if user.is_authenticated %}
+        {{ user.username }}
+    {% else %}
+        Guest
+    {% endif %}
+    </div>
     <h1>Menu</h1>
     <ul>
-        <li><a href="{% url 'catalog_main' %}">Main page</a></li>
-        {% for el in menu %}
-        {% if not forloop.last %}<li>{% else %}<li class="last">{% endif %}
-            {% if el.url == 'logout' %}
-            <form action="{% url 'logout' %}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="menu-logout">{{ el.title }}</button>
-            </form>
-            {% else %}
-            <a href="{% url el.url %}">{{ el.title }}</a>
-            {% endif %}
-        </li>
-        {% endfor %}
-        {% if user.is_authenticated %}
-            <li><a href="{% url 'logout' %}">Logout</a></li>
-        {% else %}
-            <li><a href="{% url 'login' %}">Login</a></li>
-            {# <li><a href="{% url 'register' %}">Register</a></li> #} 
-        {% endif %}
-    </ul>
+    <li><a href="{% url 'catalog_main' %}">Main page</a></li>
+    {% for el in menu %}
+    <li><a href="{% url el.url %}">{{ el.title }}</a></li>
+    {% endfor %}
+    {% if user.is_authenticated %}
+    <li>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="menu-logout">Logout</button>
+        </form>
+    </li>
+    <li><a href="{% url 'profile' %}">Profile</a></li>
+    {% else %}
+    <li><a href="{% url 'login' %}">Login</a></li>
+    <li><a href="{% url 'register' %}">Register</a></li>
+    {% endif %}
+</ul>
     {% show_tags %}
     {% show_cats %}
     {% block content %} {% endblock %}
