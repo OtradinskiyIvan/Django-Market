@@ -28,4 +28,6 @@ path('password-reset/', PasswordResetView.as_view(
     email_template_name='users/password_reset_email.html',
     success_url=reverse_lazy('password_reset_done'),
 ), name='password_reset'),
+path('register/done/', register_done, name='register_done'),
+path('verify/<uidb64>/<token>/', verify_email, name='verify_email'),
 ]

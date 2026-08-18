@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>{{ title }}</h1>
+    <p>We've sent you a confirmation email. Please check your inbox and click the link to activate your account.</p>
+    <p><a href="{% url 'login' %}">Back to login</a></p>
+{% endblock %}

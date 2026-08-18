@@ -59,15 +59,22 @@ class RegisterForm(UserCreationForm):
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        if get_user_model().objects.filter(email=email).exists():
+        if get_user_model().objects.filter(email=email, is_active=True).exists():
             raise forms.ValidationError('Email already registered')
         return email
 
     def clean_phone(self):
         phone = self.cleaned_data.get('phone')
-        if phone and Profile.objects.filter(phone=str(phone)).exists():
+        if phone and Profile.objects.filter(phone=str(phone), user__is_active=True).exists():
             raise forms.ValidationError('Phone already registered')
         return phone
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if User.objects.filter(username__iexact=username, is_active=True):
+            raise forms.ValidationError('Username already registered')
+        return username
+
 
 
 class ProfileForm(forms.ModelForm):
