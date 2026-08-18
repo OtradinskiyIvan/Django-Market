@@ -1,3 +1,5 @@
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.models import User
@@ -92,3 +94,14 @@ def verify_email(request: HttpRequest, uidb64, token) -> HttpResponse:
 
 def register_done(request: HttpRequest) -> HttpResponse:
     return render(request, 'users/register_done.html', {'title': 'Check your email'})
+
+
+@login_required
+def topup(request: HttpRequest) -> HttpResponse:
+    form = TopUpForm(request.POST)
+    if form.is_valid():
+        profile = request.user.profile
+        profile.balance += form.cleaned_data['amount']
+        profile.save(update_fields=['balance'])
+        messages.success(request, 'Balance topped up')
+    return redirect('profile')
