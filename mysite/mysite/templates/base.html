@@ -22,12 +22,21 @@
     {% for el in menu %}
     <li><a href="{% url el.url %}">{{ el.title }}</a></li>
     {% endfor %}
+    {% if messages %}
+    <li>
+        <ul class="messages">
+            {% for m in messages %}<li>{{ m }}</li>{% endfor %}
+        </ul>
+    </li>
+    {% endif %}
     {% if user.is_authenticated %}
+    <li><a href="{% url 'cart' %}">Cart ({{ cart_count }})</a></li>
+    <li><a href="{% url 'orders' %}">My orders</a></li>
     <li>
         <form action="{% url 'logout' %}" method="post">
             {% csrf_token %}
             <button type="submit" class="menu-logout">Logout</button>
-        </form>
+        </form>Plan·DeepSeek V4 Flash Free
     </li>
     <li><a href="{% url 'profile' %}">Profile</a></li>
     {% else %}

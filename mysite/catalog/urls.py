@@ -16,4 +16,9 @@ urlpatterns = [
     path('contact_us/', contact_us, name='contact_us'),
     path('tag/<int:tag_id>/', tag_by_id, name='catalog_tag_id'),
     path('tag/<slug:tag_slug>/', tag_by_slug, name='catalog_tag_slug'),
+    path('cart/', cart, name='cart'),
+    path('cart/add/<int:item_id>/', cart_add, name='cart_add'),
+    path('cart/remove/<int:item_id>/', cart_remove, name='cart_remove'),
+    path('checkout/', checkout, name='checkout'),
+    path('orders/', orders, name='orders'),
 ]

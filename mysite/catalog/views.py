@@ -1,10 +1,13 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import redirect, render, get_object_or_404
 import datetime
 
 from django.urls import reverse
 from django.template.loader import render_to_string
+
+from .services import *
 from .utils import menu
 
 from .models import Catalog, Category, Tag
@@ -179,3 +182,56 @@ def archive(request, year) -> HttpResponse | Http404:
 
 def page_not_found(request: HttpRequest, exception) -> HttpResponseNotFound:
     return HttpResponseNotFound(f"<h1>Page not found</h1><p>Description: {exception}</p>")
+
+@login_required
+def cart_add(request, item_id):
+    item = get_object_or_404(Catalog, pk=item_id)
+    if item.seller_id == request.user.profile.id:
+        messages.error(request, 'Cannot buy your own item')
+        return redirect('catalog_item_id', item_id=item_id)
+    form = CartAddForm(request.POST)
+    if form.is_valid():
+        qty = form.cleaned_data['quantity']
+        if qty > item.quantity:
+            messages.error(request, f'Not enough stock for {item.title}')
+        else:
+            add_to_cart(request, item_id, qty)
+            messages.success(request, f'{item.title} added to cart')
+    return redirect('catalog_item_id', item_id=item_id)
+
+@login_required
+def cart_remove(request, item_id):
+    remove_from_cart(request, item_id)
+    return redirect('cart')
+
+@login_required
+def cart(request):
+    lines, total = cart_lines(request)
+    data = {'title': 'Cart', 'menu': menu, 'lines': lines, 'total': total,
+            'balance': request.user.profile.balance}
+    return render(request, 'catalog/cart.html', data)
+
+@login_required
+def checkout(request):
+    if request.method == 'POST':
+        lines, _ = cart_lines(request)
+        if not lines:
+            messages.error(request, 'Cart is empty')
+            return redirect('cart')
+        try:
+            create_order(request.user.profile, [(it, q) for it, q, _ in lines])
+            clear_cart(request)
+            messages.success(request, 'Order created')
+            return redirect('orders')
+        except ValueError as e:
+            messages.error(request, str(e))
+            return redirect('cart')
+    return redirect('cart')
+
+@login_required
+def orders(request):
+    orders_list = (request.user.profile.orders
+                   .prefetch_related('orderitem_set__item')
+                   .order_by('-created_at'))
+    data = {'title': 'My orders', 'menu': menu, 'orders': orders_list}
+    return render(request, 'catalog/orders.html', data)
