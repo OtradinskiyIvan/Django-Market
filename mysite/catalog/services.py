@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.db import transaction
 
 from users.models import Profile
@@ -24,15 +26,21 @@ def create_order(profile, items):
             raise ValueError('Not enough balance')
         
         order = Order.objects.create(user=profile)
+        seller_totals = defaultdict(int)
         for item, qty in locked:
             OrderItem.objects.create(order=order, item=item, quantity=qty, price=item.price)
             item.quantity -= qty
             if item.quantity == 0:
                 item.is_available = Catalog.Status.ARCHIVED
             item.save()
+            seller_totals[item.seller_id] += item.price * qty
 
         profile.balance -= total
         profile.save()
+
+        for seller in Profile.objects.select_for_update().filter(pk__in=seller_totals):
+            seller.balance += seller_totals[seller.pk]
+            seller.save()
     return order
 
 def get_cart(request):

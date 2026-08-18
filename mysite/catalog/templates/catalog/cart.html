@@ -3,6 +3,12 @@
     <h1>{{ title }}</h1>
     {% for item, qty, line_total in lines %}
         <p>{{ item.title }} — {{ item.price }} x {{ qty }} = {{ line_total }}
+        <form action="{% url 'cart_add' item.pk %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{% url 'cart' %}">
+            <input type="number" name="quantity" value="{{ qty }}" min="1" max="{{ item.quantity }}">
+            <button type="submit">Update</button>
+        </form>
         <form action="{% url 'cart_remove' item.pk %}" method="post">
             {% csrf_token %}
             <button type="submit">Remove</button>
