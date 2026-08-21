@@ -57,6 +57,7 @@ def add_item(request: HttpRequest, ) -> HttpResponse:
                     item.images.create(image=file)
                 if video := request.FILES.get('video'):
                     item.video.create(video=video)
+                return redirect('catalog_item_id', item.pk)
 
             except Exception as exc:
                 form.add_error(None, f'Failed to add item with exception as: {exc}')
