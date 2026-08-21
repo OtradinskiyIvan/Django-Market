@@ -17,7 +17,7 @@
     <p><strong>Average:</strong> {{ avg_rating|floatformat:1|default:"no ratings yet" }}</p>
     <ul>
     {% for r in reviews %}
-        <li><strong>{{ r.rating }}/5</strong> by {{ r.customer.name }} ({{ r.created_at|date:"d M Y" }})
+        <li><strong>{{ r.rating }}/5</strong> by <a href="{% url 'user_page' r.customer.pk %}">{{ r.customer.full_name }}</a> ({{ r.created_at|date:"d M Y" }})
             {% if r.comment %}<br>{{ r.comment }}{% endif %}
         </li>
     {% empty %}

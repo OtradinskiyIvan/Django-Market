@@ -10,7 +10,6 @@ def create_user_profile(sender, instance, created, **kwargs):
         Profile.objects.get_or_create(
             user=instance,
             defaults={
-                'name': instance.username,
                 'phone': None,
             }
         )

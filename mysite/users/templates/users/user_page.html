@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h1>{{ profile.name }}</h1>
+    <h1>{{ profile.full_name }}</h1>
     {% if profile.role == 1 %}
         <p><strong>Average rating:</strong> {{ avg_rating|floatformat:1|default:"no ratings yet" }}</p>
         {% if reviews %}
@@ -8,7 +8,7 @@
             <ul>
             {% for r in reviews %}
                 <li>
-                    <strong>{{ r.rating }}/5</strong> by {{ r.customer.name }}
+                    <strong>{{ r.rating }}/5</strong> by <a href="{% url 'user_page' r.customer.pk %}">{{ r.customer.full_name }}</a>
                     ({{ r.created_at|date:"d M Y" }})
                     {% if r.comment %}<br>{{ r.comment }}{% endif %}
                 </li>

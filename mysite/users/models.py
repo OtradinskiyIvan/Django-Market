@@ -9,7 +9,6 @@ class Profile(models.Model):
          SELLER = 1, 'Seller'
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255)
     phone = models.CharField(max_length=255, unique=True, null=True)
     role = models.IntegerField(choices=Role.choices, default=Role.CUSTOMER)
     is_verified = models.BooleanField(default=False)
@@ -18,8 +17,12 @@ class Profile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    @property
+    def full_name(self):
+        return f"{self.user.first_name} {self.user.last_name}".strip() or self.user.username
+
     def __str__(self):
-          return f"{self.get_role_display()} {self.name}"
+          return f"{self.get_role_display()} {self.full_name}"
 
 
 class SellerReview(models.Model):

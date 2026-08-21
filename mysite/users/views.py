@@ -48,10 +48,11 @@ class RegisterUser(CreateView):
                 email=form.cleaned_data['email'],
                 password=form.cleaned_data['password1'],
             )
+            user.first_name = form.cleaned_data['first_name']
+            user.last_name = form.cleaned_data['last_name']
             user.is_active = False
             user.save()
-            user.profile.name = form.cleaned_data['name']
-            user.profile.phone = str(form.cleaned_data['phone'])
+            user.profile.phone = str(form.cleaned_data['phone']) if form.cleaned_data['phone'] else None
             user.profile.role = int(form.cleaned_data['role'])
             user.profile.save()
 
@@ -73,6 +74,13 @@ class ProfileUser(LoginRequiredMixin, UpdateView):
 
     def get_object(self, queryset=None):       
         return self.request.user.profile
+
+    def form_valid(self, form):
+        user = self.request.user
+        user.first_name = form.cleaned_data['first_name']
+        user.last_name = form.cleaned_data['last_name']
+        user.save(update_fields=['first_name', 'last_name'])
+        return super().form_valid(form)
 
     def get_success_url(self):
         return reverse_lazy('profile')
@@ -129,7 +137,7 @@ def user_page(request: HttpRequest, profile_id: int) -> HttpResponse:
         return redirect('profile')
 
     data = {
-        'title': profile.name,
+        'title': profile.full_name,
         'profile': profile,
         'avg_rating': None,
         'reviews': [],

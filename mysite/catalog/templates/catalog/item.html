@@ -24,7 +24,7 @@
     {% endif %}
     
     <p>Price: {{ price }}</p>
-    <p>Seller: <a href="{% url 'user_page' item.seller.pk %}">{{ item.seller.name }}</a></p>
+    <p>Seller: <a href="{% url 'user_page' item.seller.pk %}">{{ item.seller.full_name }}</a></p>
     <form action="{% url 'favorite_toggle' item.pk %}" method="post">
         {% csrf_token %}
         {% if user.is_authenticated and item in user.profile.favorites.all %}

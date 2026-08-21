@@ -5,7 +5,7 @@
         <div>
             <p>Order #{{ order.pk }} — {{ order.created_at|date:"d M Y H:i" }}
                | Status: {{ order.get_status_display }}
-               | Buyer: <a href="{% url 'user_page' order.user.pk %}">{{ order.user.name }}</a></p>
+               | Buyer: <a href="{% url 'user_page' order.user.pk %}">{{ order.user.full_name }}</a></p>
             <ul>
             {% for oi in order.orderitem_set.all %}
                 {% if oi.item.seller_id == profile.pk %}

@@ -48,9 +48,10 @@ class LoginForm(AuthenticationForm):
                 self.confirm_login_allowed(self.user_cache)
 
 class RegisterForm(UserCreationForm):
-    name = forms.CharField(max_length=255)
+    first_name = forms.CharField(max_length=150)
+    last_name = forms.CharField(max_length=150)
     email = forms.EmailField()
-    phone = PhoneNumberField()
+    phone = PhoneNumberField(required=False, label='Phone')
     role = forms.ChoiceField(choices=Profile.Role.choices)
 
     class Meta:
@@ -80,17 +81,25 @@ class RegisterForm(UserCreationForm):
 class ProfileForm(forms.ModelForm):
     username = forms.CharField(disabled=True, label='Username')
     email = forms.EmailField(disabled=True, label='Email')
+    first_name = forms.CharField(max_length=150, label='First name')
+    last_name = forms.CharField(max_length=150, label='Last name')
     phone = PhoneNumberField(required=False, label='Phone')
 
     class Meta:
         model = Profile
-        fields = ['phone', 'name']
+        fields = ['phone']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.pk:
             self.fields['username'].initial = self.instance.user.username
             self.fields['email'].initial = self.instance.user.email
+            self.fields['first_name'].initial = self.instance.user.first_name
+            self.fields['last_name'].initial = self.instance.user.last_name
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone')
+        return str(phone) if phone else None
 
 
 class TopUpForm(forms.Form):
