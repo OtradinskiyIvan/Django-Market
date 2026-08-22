@@ -1,2 +1,14 @@
+{% load catalog_tags %}
 <h1>Tags</h1>
-<nav>{% for tag in tags %}<a href="{% url 'catalog_tag_id' tag.id %}">{{ tag.title }}</a>{% if not forloop.last %} | {% endif %}{% endfor %}</nav>
+<form class="tag-filter" method="get" action="">
+    {% for tag in tags %}
+        <label class="tag-option">
+            <input type="checkbox" name="tags" value="{{ tag.pk }}" {% if tag.pk in selected %}checked{% endif %}>
+            {{ tag.title }}
+        </label>
+    {% endfor %}
+    <span class="tag-filter-actions">
+        <button type="submit" class="btn btn-outline">{% icon 'check-circle' %}<span>Apply</span></button>
+        {% if selected %}<a class="btn btn-outline" href="{{ request.path }}">Reset</a>{% endif %}
+    </span>
+</form>

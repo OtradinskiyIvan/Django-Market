@@ -19,7 +19,7 @@
         <div class="meta-row">
             {% if cat %}<span class="chip">{{ cat }}</span>{% endif %}
             {% for tag in tags %}
-                <a class="chip" href="{% url 'catalog_tag_id' tag.id %}">#{{ tag.title }}</a>
+                <span class="chip">#{{ tag.title }}</span>
             {% endfor %}
         </div>
         <p class="big-price">{{ price }}</p>

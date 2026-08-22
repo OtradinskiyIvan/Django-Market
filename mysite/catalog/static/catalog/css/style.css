@@ -311,6 +311,79 @@ a.chip:hover {
     color: #fff;
 }
 
+.tag-filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 10px 14px;
+    margin-bottom: 20px;
+}
+
+.tag-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #ecf0f1;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    padding: 2px 12px;
+    font-size: .85em;
+    color: var(--dark);
+    cursor: pointer;
+    user-select: none;
+}
+
+.tag-option:hover {
+    border-color: var(--primary);
+}
+
+.tag-option input {
+    accent-color: var(--primary);
+    margin: 0;
+}
+
+.tag-filter-actions {
+    display: inline-flex;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.cat-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.cat-btn {
+    display: inline-block;
+    padding: 4px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    font-size: .88em;
+    font-weight: bold;
+    color: var(--dark);
+    text-decoration: none;
+}
+
+.cat-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.cat-btn.active,
+.cat-btn.active:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
 .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));

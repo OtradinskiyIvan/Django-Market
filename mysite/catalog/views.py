@@ -28,11 +28,19 @@ def seller_required(view_func):
     return _wrapper
 
 
+def _filter_by_tags(qs, request):
+    ids = [v for v in request.GET.getlist('tags') if v.isdigit()]
+    known = set(Tag.objects.filter(pk__in=ids).values_list('pk', flat=True))
+    if not known:
+        return qs
+    return qs.filter(tags__pk__in=known).distinct()
+
+
 def index(request: HttpRequest) -> HttpResponse:
     data = {
         'title': 'Main page',
         'menu': menu,
-        'items_list': Catalog.available.all(),
+        'items_list': _filter_by_tags(Catalog.available.all(), request),
     }
     return render(request, 'catalog/index.html', data)
 
@@ -45,14 +53,14 @@ def add_item(request: HttpRequest, ) -> HttpResponse:
                 data = form.cleaned_data.copy()
                 data.pop('images', None)
                 data.pop('video', None)
-                tag = data.pop('tags', None)
+                tags = data.pop('tags')
                 item = Catalog.objects.create(
                     seller=request.user.profile,
                     **data,
                 )
 
-                if tag:
-                    item.tags.set([tag])
+                if tags:
+                    item.tags.set(tags)
                 for file in request.FILES.getlist('images'):
                     item.images.create(image=file)
                 if video := request.FILES.get('video'):
@@ -100,7 +108,8 @@ def category_by_id(request: HttpRequest, cat_id: int) -> HttpResponse | Http404:
         data = {
             'title': cat.title,
             'menu': menu,
-            'items_list': cat.catalog_set.filter(is_available=1),
+            'items_list': _filter_by_tags(cat.catalog_set.filter(is_available=1), request),
+            'current_cat': cat.pk,
         }
         return render(request, 'catalog/category.html', data)
 
@@ -114,7 +123,8 @@ def category_by_slug(request: HttpRequest, cat_slug: str) -> HttpResponse | Http
         data = {
             'title': cat.title,
             'menu': menu,
-            'items_list': cat.catalog_set.filter(is_available=1),
+            'items_list': _filter_by_tags(cat.catalog_set.filter(is_available=1), request),
+            'current_cat': cat.pk,
         }
         return render(request, 'catalog/category.html', data)
 
@@ -154,32 +164,6 @@ def item_by_id(request: HttpRequest, item_id: int) -> HttpResponse | Http404:
             'item': item,
         }
         return render(request, 'catalog/item.html', data)
-
-    except Exception as exc:
-        raise exc
-
-def tag_by_slug(request, tag_slug) -> HttpResponse | Http404:
-    tag = get_object_or_404(Tag, slug=tag_slug)
-    try:
-        data = {
-            'title': tag.title,
-            'menu': menu,
-            'items_list': tag.catalog_set.all(),
-        }
-        return render(request, 'catalog/category.html', data)
-
-    except Exception as exc:
-        raise exc
-
-def tag_by_id(request, tag_id) -> HttpRequest | Http404:
-    tag = get_object_or_404(Tag, pk=tag_id)
-    try:
-        data = {
-            'title': tag.title,
-            'menu': menu,
-            'items_list': tag.catalog_set.all(),
-        }
-        return render(request, 'catalog/category.html', data)
 
     except Exception as exc:
         raise exc
