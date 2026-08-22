@@ -1,28 +1,50 @@
 {% extends 'base.html' %}
+{% load catalog_tags %}
 {% block content %}
     <h1>{{ title }}</h1>
-    {% for item, qty, line_total in lines %}
-        <p>{{ item.title }} — {{ item.price }} x {{ qty }} = {{ line_total }}
-        <form action="{% url 'cart_add' item.pk %}" method="post">
-            {% csrf_token %}
-            <input type="hidden" name="next" value="{% url 'cart' %}">
-            <input type="number" name="quantity" value="{{ qty }}" min="1" max="{{ item.quantity }}">
-            <button type="submit">Update</button>
-        </form>
-        <form action="{% url 'cart_remove' item.pk %}" method="post">
-            {% csrf_token %}
-            <button type="submit">Remove</button>
-        </form></p>
-    {% empty %}
-        <p>Cart is empty</p>
-    {% endfor %}
     {% if lines %}
-        <p><strong>Total: {{ total }}</strong></p>
-        <p>Balance: {{ balance }}</p>
-        {% for m in messages %}{% if 'error' in m.tags %}<p class="form-error">{{ m }}</p>{% endif %}{% endfor %}
-        <form action="{% url 'checkout' %}" method="post">
-            {% csrf_token %}
-            <button type="submit">Pay</button>
-        </form>
+        <div class="cart-list">
+            {% for item, qty, line_total in lines %}
+                <div class="cart-row">
+                    {% if item.images.all %}
+                        <img class="cart-thumb" src="{{ item.images.first.image.url }}" alt="{{ item.title }}">
+                    {% else %}
+                        <span class="cart-thumb-placeholder">{% icon 'bookmark' %}</span>
+                    {% endif %}
+                    <div class="cart-info">
+                        <strong><a href="{% url 'catalog_item_id' item.id %}">{{ item.title }}</a></strong>
+                        <form class="qty-form" action="{% url 'cart_add' item.pk %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{% url 'cart' %}">
+                            <input class="qty-input" type="number" name="quantity" value="{{ qty }}" min="1" max="{{ item.quantity }}">
+                            <button class="btn btn-outline" type="submit">Update</button>
+                        </form>
+                    </div>
+                    <div class="cart-line-total">
+                        <span class="price">{{ line_total }} rub.</span><br>
+                        <small>{{ item.price }} × {{ qty }}</small>
+                    </div>
+                    <form action="{% url 'cart_remove' item.pk %}" method="post">
+                        {% csrf_token %}
+                        <button class="btn-icon" type="submit" title="Remove">{% icon 'trash' %}</button>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="panel cart-summary">
+            <p class="total-row"><strong>Total:</strong> <span class="price">{{ total }} rub.</span></p>
+            <p><span>Balance:</span> <span>{% icon 'wallet2' %} {{ balance }}</span></p>
+            {% for m in messages %}{% if 'error' in m.tags %}<p class="form-error">{{ m }}</p>{% endif %}{% endfor %}
+            <form action="{% url 'checkout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-block">{% icon 'check-circle' %}<span>Pay</span></button>
+            </form>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            {% icon 'basket' %}
+            <p>Cart is empty</p>
+        </div>
     {% endif %}
 {% endblock %}
