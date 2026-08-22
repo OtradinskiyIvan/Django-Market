@@ -1,0 +1,41 @@
+{% load catalog_tags %}
+<article class="product-card">
+    <a class="card-photo" href="{% url 'catalog_item_id' item.id %}">
+        {% if item.images.all %}
+            <img src="{{ item.images.first.image.url }}" alt="{{ item.title }}">
+        {% else %}
+            <span class="photo-placeholder">{% icon 'bookmark' %}</span>
+        {% endif %}
+    </a>
+    <div class="card-body">
+        <div class="card-meta">
+            {% if item.category %}
+                <a class="chip" href="{% url 'catalog_cat_id' item.category.id %}">{{ item.category.title }}</a>
+            {% else %}
+                <span class="chip">No category</span>
+            {% endif %}
+            <span class="price">{{ item.price }} rub.</span>
+        </div>
+        <h3 class="card-title"><a href="{% url 'catalog_item_id' item.id %}">{{ item.title }}</a></h3>
+    </div>
+    <div class="card-actions">
+        <a class="btn btn-outline" href="{% url 'catalog_item_id' item.id %}">Show more</a>
+        {% if user.is_authenticated %}
+            {% if item in user.profile.favorites.all %}
+                <form action="{% url 'favorite_toggle' item.pk %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-icon active" title="Remove from favorites">
+                        {% icon 'heart' filled=True %}
+                    </button>
+                </form>
+            {% else %}
+                <form action="{% url 'favorite_toggle' item.pk %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-icon" title="Add to favorites">
+                        {% icon 'heart' %}
+                    </button>
+                </form>
+            {% endif %}
+        {% endif %}
+    </div>
+</article>

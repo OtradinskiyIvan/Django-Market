@@ -1,27 +1,40 @@
 {% extends 'base.html' %}
+{% load catalog_tags %}
 {% block content %}
     <h1>{{ title }}</h1>
-    <p><strong>Balance:</strong> {{ balance }}</p>
-    <p><strong>Pending payout:</strong> {{ pending }}</p>
-    <p><a href="{% url 'seller_stock' %}">Stock management</a></p>
-    <p><a href="{% url 'seller_orders' %}">Orders</a></p>
-    <h2>Sales statistics</h2>
-    <ul>
-    {% for s in stats %}
-        <li><strong>{{ s.item__title }}</strong> — sold: {{ s.total_qty }} pcs, revenue: {{ s.revenue }} rub.</li>
-    {% empty %}
-        <li>No sales yet.</li>
-    {% endfor %}
-    </ul>
-    <h2>Rating</h2>
-    <p><strong>Average:</strong> {{ avg_rating|floatformat:1|default:"no ratings yet" }}</p>
-    <ul>
-    {% for r in reviews %}
-        <li><strong>{{ r.rating }}/5</strong> by <a href="{% url 'user_page' r.customer.pk %}">{{ r.customer.full_name }}</a> ({{ r.created_at|date:"d M Y" }})
-            {% if r.comment %}<br>{{ r.comment }}{% endif %}
-        </li>
-    {% empty %}
-        <li>No reviews yet.</li>
-    {% endfor %}
-    </ul>
+    <div class="panel">
+        <p><strong>Balance:</strong> {% icon 'wallet2' %} {{ balance }}</p>
+        <p><strong>Pending payout:</strong> {{ pending }}</p>
+        <div class="item-actions">
+            <a class="btn btn-outline" href="{% url 'seller_stock' %}">{% icon 'archive' %}<span>Stock management</span></a>
+            <a class="btn btn-outline" href="{% url 'seller_orders' %}">{% icon 'bookmark' %}<span>Orders</span></a>
+        </div>
+    </div>
+    <div class="panel">
+        <h2>Sales statistics</h2>
+        <ul>
+        {% for s in stats %}
+            <li><strong>{{ s.item__title }}</strong> — sold: {{ s.total_qty }} pcs, revenue: {{ s.revenue }} rub.</li>
+        {% empty %}
+            <li>No sales yet.</li>
+        {% endfor %}
+        </ul>
+    </div>
+    <div class="panel">
+        <h2>{% icon 'star' %} Rating</h2>
+        {% if avg_rating %}
+            <p><strong>Average:</strong> {% icon 'star' filled=True %} {{ avg_rating|floatformat:1 }}</p>
+        {% else %}
+            <p><strong>Average:</strong> no ratings yet</p>
+        {% endif %}
+        <ul>
+        {% for r in reviews %}
+            <li><strong>{% icon 'star' filled=True %} {{ r.rating }}/5</strong> by <a href="{% url 'user_page' r.customer.pk %}">{{ r.customer.full_name }}</a> ({{ r.created_at|date:"d M Y" }})
+                {% if r.comment %}<br>{{ r.comment }}{% endif %}
+            </li>
+        {% empty %}
+            <li>No reviews yet.</li>
+        {% endfor %}
+        </ul>
+    </div>
 {% endblock %}

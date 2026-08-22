@@ -1,32 +1,39 @@
 {% extends 'base.html' %}
+{% load catalog_tags %}
 {% block content %}
     <h1>{{ profile.full_name }}</h1>
     {% if profile.role == 1 %}
-        <p><strong>Average rating:</strong> {{ avg_rating|floatformat:1|default:"no ratings yet" }}</p>
-        {% if reviews %}
-            <p>{{ reviews|length }} review(s)</p>
-            <ul>
-            {% for r in reviews %}
-                <li>
-                    <strong>{{ r.rating }}/5</strong> by <a href="{% url 'user_page' r.customer.pk %}">{{ r.customer.full_name }}</a>
-                    ({{ r.created_at|date:"d M Y" }})
-                    {% if r.comment %}<br>{{ r.comment }}{% endif %}
-                </li>
-            {% endfor %}
-            </ul>
-        {% else %}
-            <p>No reviews yet.</p>
-        {% endif %}
+        <div class="panel">
+            <h2>{% icon 'star' %} Average rating: {{ avg_rating|floatformat:1|default:"no ratings yet" }}</h2>
+            {% if reviews %}
+                <p>{{ reviews|length }} review(s)</p>
+                <ul>
+                {% for r in reviews %}
+                    <li>
+                        <strong>{% icon 'star' filled=True %} {{ r.rating }}/5</strong> by <a href="{% url 'user_page' r.customer.pk %}">{{ r.customer.full_name }}</a>
+                        ({{ r.created_at|date:"d M Y" }})
+                        {% if r.comment %}<br>{{ r.comment }}{% endif %}
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>No reviews yet.</p>
+            {% endif %}
+        </div>
         {% if form %}
-            <h2>Leave a review</h2>
-            <form action="{% url 'leave_review' profile.pk %}" method="post">
-                {% csrf_token %}
-                <p><label for="{{ form.rating.id_for_label }}">Rating:</label> {{ form.rating }}</p>
-                <p><label for="{{ form.comment.id_for_label }}">Comment:</label> {{ form.comment }}</p>
-                <button type="submit">Submit review</button>
-            </form>
+            <div class="panel">
+                <h2>Leave a review</h2>
+                <form action="{% url 'leave_review' profile.pk %}" method="post">
+                    {% csrf_token %}
+                    <p><label for="{{ form.rating.id_for_label }}">Rating:</label> {{ form.rating }}</p>
+                    <p><label for="{{ form.comment.id_for_label }}">Comment:</label> {{ form.comment }}</p>
+                    <button type="submit" class="btn btn-primary">{% icon 'star' %}<span>Submit review</span></button>
+                </form>
+            </div>
         {% endif %}
     {% else %}
-        <p><strong>Customer since:</strong> {{ profile.created_at|date:"d M Y" }}</p>
+        <div class="panel">
+            <p><strong>Customer since:</strong> {{ profile.created_at|date:"d M Y" }}</p>
+        </div>
     {% endif %}
 {% endblock %}

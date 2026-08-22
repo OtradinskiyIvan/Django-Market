@@ -1,49 +1,56 @@
 {% extends 'base.html' %}
+{% load catalog_tags %}
 {% block content %}
-    <h1>Name: {{ title }}</h1>
-    <p>Category: {{ cat }}</p>
-    {% if tags %}
-        <p>Tags:
-            {% for tag in tags %}
-                <a href="{% url 'catalog_tag_id' tag.id %}">{{ tag.title }}</a>{% if not forloop.last %}, {% endif %}
+<div class="item-page">
+    <div class="item-gallery">
+        {% if item.images.all %}
+            {% for img in item.images.all %}
+                <img src="{{ img.image.url }}" alt="{{ title }}">
             {% endfor %}
-        </p>
-    {% endif %}
-    {% if item.images.all %}
-        <h3>Images:</h3>
-        {% for img in item.images.all %}
-            <img src="{{ img.image.url }}" alt="" width="200">
-        {% endfor %}
-    {% endif %}
-
-    {% if item.video.all %}
-        <h3>Video:</h3>
-        {% for video in item.video.all %}
-            <video controls src="{{ video.video.url }}" width="400"></video>
-        {% endfor %}
-    {% endif %}
-    
-    <p>Price: {{ price }}</p>
-    <p>Seller: <a href="{% url 'user_page' item.seller.pk %}">{{ item.seller.full_name }}</a></p>
-    <form action="{% url 'favorite_toggle' item.pk %}" method="post">
-        {% csrf_token %}
-        {% if user.is_authenticated and item in user.profile.favorites.all %}
-            <button type="submit">Remove from favorites</button>
         {% else %}
-            <button type="submit">Add to favorites</button>
+            <div class="empty-state">{% icon 'bookmark' %}<p>No photos yet.</p></div>
         {% endif %}
-    </form>
-    <h2>Decription:</h2>
-    {% autoescape off %}
-    <p>{{ desc | linebreaks }}</p>
-    {% if user.is_authenticated and item.seller.user_id != user.id %}
-    <p>In stock: {{ item.quantity }}</p>
-    <form action="{% url 'cart_add' item.pk %}" method="post">
-        {% csrf_token %}
-        <label>Quantity:</label>
-        <input type="number" name="quantity" value="1" min="1" max="{{ item.quantity }}">
-        <button type="submit">Add to cart</button>
-    </form>
-    {% endif %}
-    {% endautoescape %}
+        {% for video in item.video.all %}
+            <video controls src="{{ video.video.url }}"></video>
+        {% endfor %}
+    </div>
+    <div class="panel">
+        <h1>{{ title }}</h1>
+        <div class="meta-row">
+            {% if cat %}<span class="chip">{{ cat }}</span>{% endif %}
+            {% for tag in tags %}
+                <a class="chip" href="{% url 'catalog_tag_id' tag.id %}">#{{ tag.title }}</a>
+            {% endfor %}
+        </div>
+        <p class="big-price">{{ price }}</p>
+        <p>Seller: <a href="{% url 'user_page' item.seller.pk %}">{{ item.seller.full_name }}</a></p>
+
+        <div class="item-actions">
+            <form action="{% url 'favorite_toggle' item.pk %}" method="post">
+                {% csrf_token %}
+                {% if user.is_authenticated and item in user.profile.favorites.all %}
+                    <button type="submit" class="btn-icon active" title="Remove from favorites">
+                        {% icon 'heart' filled=True %}
+                    </button>
+                {% else %}
+                    <button type="submit" class="btn-icon" title="Add to favorites">
+                        {% icon 'heart' %}
+                    </button>
+                {% endif %}
+            </form>
+
+                {% if user.is_authenticated and item.seller.user_id != user.id %}
+                <form action="{% url 'cart_add' item.pk %}" method="post" class="qty-form">
+                    {% csrf_token %}
+                    <input class="qty-input" type="number" name="quantity" value="1" min="1" max="{{ item.quantity }}">
+                    <button type="submit" class="btn btn-primary">{% icon 'basket' %}<span>Add to cart</span></button>
+                </form>
+                <small>In stock: {{ item.quantity }}</small>
+            {% endif %}
+        </div>
+
+        <h2>Description</h2>
+        <p>{{ desc | linebreaks }}</p>
+    </div>
+</div>
 {% endblock %}

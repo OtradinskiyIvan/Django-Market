@@ -1,30 +1,50 @@
 {% extends 'base.html' %}
+{% load catalog_tags %}
 {% block content %}
     <h1>{{ title }}</h1>
     {% for order in orders %}
-        <div>
-            <p>Order #{{ order.pk }} — {{ order.created_at|date:"d M Y H:i" }}
-               | Status: {{ order.get_status_display }}</p>
+        <div class="order-card">
+            <div class="order-head">
+                <span class="order-num">Order #{{ order.pk }}</span>
+                <span class="order-date">{{ order.created_at|date:"d M Y H:i" }}</span>
+                <span class="status-badge s{{ order.status }}">
+                    {% if order.status == 2 %}
+                        {% icon 'check-circle' filled=True %}
+                    {% elif order.status == 3 %}
+                        {% icon 'trash' %}
+                    {% elif order.status == 1 %}
+                        {% icon 'arrow-right-circle' %}
+                    {% else %}
+                        {% icon 'bookmark' %}
+                    {% endif %}
+                    {{ order.get_status_display }}
+                </span>
+            </div>
             <ul>
-            {% for oi in order.orderitem_set.all %}
-                <li>{{ oi.item.title }} — {{ oi.price }} x {{ oi.quantity }} = {{ oi.line_total }}</li>
-            {% endfor %}
-            <p>Total: {{ order.total }}</p>
-            {% if order.status == 1 %}
-            <form action="{% url 'order_accept' order.pk %}" method="post">
-                {% csrf_token %}
-                <button type="submit">Accept order</button>
-            </form>
-            {% endif %}
-            {% if order.status == 0 or order.status == 1 %}
-            <form action="{% url 'order_decline' order.pk %}" method="post">
-                {% csrf_token %}
-                <button type="submit">Decline order</button>
-            </form>
-            {% endif %}
+                {% for oi in order.orderitem_set.all %}
+                    <li>{{ oi.item.title }} — {{ oi.price }} × {{ oi.quantity }} = {{ oi.line_total }}</li>
+                {% endfor %}
             </ul>
+            <p class="order-total">Total: {{ order.total }}</p>
+            <div class="order-actions">
+                {% if order.status == 1 %}
+                <form action="{% url 'order_accept' order.pk %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">{% icon 'check-circle' %}<span>Accept order</span></button>
+                </form>
+                {% endif %}
+                {% if order.status == 0 or order.status == 1 %}
+                <form action="{% url 'order_decline' order.pk %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">{% icon 'trash' %}<span>Decline order</span></button>
+                </form>
+                {% endif %}
+            </div>
         </div>
     {% empty %}
-        <p>No orders yet</p>
+        <div class="empty-state">
+            {% icon 'archive' %}
+            <p>No orders yet</p>
+        </div>
     {% endfor %}
 {% endblock %}

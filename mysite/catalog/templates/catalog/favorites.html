@@ -1,17 +1,17 @@
 {% extends 'base.html' %}
+{% load catalog_tags %}
 {% block content %}
     <h1>{{ title }}</h1>
-    <ul>
-    {% for item in items_list %}
-        <li>
-            <strong>{{ item.title }}</strong> — {{ item.price }} rub.
-            {% if item.images.all %}
-                <img src="{{ item.images.first.image.url }}" alt="" width="80">
-            {% endif %}
-            <p><a href="{% url 'catalog_item_id' item.id %}">Show more</a></p>
-        </li>
-    {% empty %}
-        <li>Favorites list is empty.</li>
-    {% endfor %}
-    </ul>
+    {% if items_list %}
+        <div class="product-grid">
+            {% for item in items_list %}
+                {% include 'catalog/includes/product_card.html' %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            {% icon 'heart' %}
+            <p>Favorites list is empty.</p>
+        </div>
+    {% endif %}
 {% endblock %}

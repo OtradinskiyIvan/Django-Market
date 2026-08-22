@@ -1,43 +1,43 @@
 {% extends 'base.html' %}
+{% load catalog_tags %}
 {% block content %}
     <h1>{{ title }}</h1>
-    <form action="" method="post">
-        {% csrf_token %}
-        <div class="form-error">{{ form.non_field_errors }}</div>
-        {% for fel in form %}
-        <p><label for="{{ fel.id_for_label }}">{{ fel.label }} : </label>{{ fel }}</p>
-        <div class="form-error">{{ fel.errors }}</div>
-        {% endfor %}
-        <button type="submit">Save</button>
-    </form>
-    <div class="profile-card">
+    <div class="panel">
+        <form action="" method="post">
+            {% csrf_token %}
+            {% if form.non_field_errors %}<div class="form-error">{{ form.non_field_errors }}</div>{% endif %}
+            {% for fel in form %}
+            <p><label for="{{ fel.id_for_label }}">{{ fel.label }} : </label>{{ fel }}</p>
+            {% if fel.errors %}<div class="form-error">{{ fel.errors }}</div>{% endif %}
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">{% icon 'check-circle' %}<span>Save</span></button>
+        </form>
+    </div>
+    <div class="panel">
         <p><strong>Username:</strong> {{ user.username }}</p>
         <p><strong>Role:</strong> {{ user.profile.get_role_display }}</p>
-        <p><strong>Balance:</strong> {{ user.profile.balance }}</p>
+        <p><strong>Balance:</strong> {% icon 'wallet2' %} {{ user.profile.balance }}</p>
         <p><strong>Registered:</strong> {{ user.profile.created_at|date:"d M Y" }}</p>
+        <div class="item-actions">
+            <form class="qty-form" action="{% url 'topup' %}" method="post">
+                {% csrf_token %}
+                <input class="qty-input" type="number" name="amount" step="0.01" min="0.01" value="100">
+                <button type="submit" class="btn btn-primary">{% icon 'wallet2' %}<span>Top up</span></button>
+            </form>
+            <form class="qty-form" action="{% url 'withdraw' %}" method="post">
+                {% csrf_token %}
+                <span class="withdraw-controls">
+                    <input class="qty-input" type="number" name="amount" step="0.01" min="0.01" value="100">
+                    <button type="submit" class="btn btn-outline">Withdraw</button>
+                    {% for m in messages %}{% if 'error' in m.tags %}<div class="form-error">{{ m }}</div>{% endif %}{% endfor %}
+                </span>
+            </form>
+        </div>
     </div>
-    <div class="topup-form">
-        <form action="{% url 'topup' %}" method="post">
-            {% csrf_token %}
-            <label>Top up:</label>
-            <input type="number" name="amount" step="0.01" min="0.01" value="100">
-            <button type="submit">Top up</button>
-        </form>
+    <div class="panel">
+        <a class="btn btn-outline" href="{% url 'orders' %}">{% icon 'bookmark' %}<span>My orders</span></a>
+        <a class="btn btn-outline" href="{% url 'cart' %}">{% icon 'basket' %}<span>Cart</span></a>
+        <a class="btn btn-outline" href="{% url 'favorites' %}">{% icon 'heart' %}<span>Favorites</span></a>
     </div>
-    <div class="withdraw-form">
-        <form action="{% url 'withdraw' %}" method="post">
-            {% csrf_token %}
-            <label>Withdraw:</label>
-            <span class="withdraw-controls">
-                <input type="number" name="amount" step="0.01" min="0.01" value="100">
-                <button type="submit">Withdraw</button>
-                {% for m in messages %}{% if 'error' in m.tags %}<div class="form-error">{{ m }}</div>{% endif %}{% endfor %}
-            </span>
-        </form>
-    </div>
-    <p><a href="{% url 'orders' %}">My orders</a></p>
-    <p><a href="{% url 'cart' %}">Cart</a></p>
-    <p><a href="{% url 'favorites' %}">Favorites</a></p>
-    <hr>
     <p><a href="{% url 'password_change' %}">Change password</a></p>
 {% endblock %}
