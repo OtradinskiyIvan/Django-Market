@@ -189,11 +189,11 @@ def archive(request, year) -> HttpResponse | Http404:
         return HttpResponseRedirect(reverse('catalog_main'))
 
     data = {
-        'title': 'Main page',
+        'title': 'Archive',
         'menu': menu,
         'items_list': Catalog.objects.filter(created_at__year=year, is_available=0),
     }
-    return render(request, 'catalog/tag.html', data)
+    return render(request, 'catalog/archive.html', data)
 
 def page_not_found(request: HttpRequest, exception) -> HttpResponseNotFound:
     return HttpResponseNotFound(f"<h1>Page not found</h1><p>Description: {exception}</p>")

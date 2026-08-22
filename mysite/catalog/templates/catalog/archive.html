@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Archive</h1>
+    <ul>
+    {% for item in items_list %}
+        <li>
+            <strong>{{ item.title }}</strong> — {{ item.price }} rub.
+            <p><a href="{% url 'catalog_item_id' item.id %}">Show more</a></p>
+        </li>
+    {% empty %}
+        <li>There's no items yet.</li>
+    {% endfor %}
+    </ul>
+{% endblock %}
