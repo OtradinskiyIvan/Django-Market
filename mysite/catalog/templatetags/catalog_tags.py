@@ -36,12 +36,12 @@ def icon(name, filled=False):
 def get_cats():
     return views.test_cats
 
-@register.inclusion_tag('catalog/list_cats.html')
-def show_cats():
-    cats = Category.objects.all()
-    return {'cats': cats}
+@register.inclusion_tag('catalog/list_cats.html', takes_context=True)
+def show_cats(context):
+    return {'cats': Category.objects.all(), 'active_cat': context.get('current_cat')}
 
-@register.inclusion_tag('catalog/list_tags.html')
-def show_tags():
-    tags = Tag.objects.all()
-    return {'tags': tags}
+@register.inclusion_tag('catalog/list_tags.html', takes_context=True)
+def show_tags(context):
+    request = context['request']
+    selected = {int(v) for v in request.GET.getlist('tags') if v.isdigit()}
+    return {'tags': Tag.objects.all(), 'selected': selected}

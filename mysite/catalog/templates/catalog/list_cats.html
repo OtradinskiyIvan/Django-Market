@@ -1,2 +1,5 @@
-<h1>Categories</h1>
-<nav>{% for cat in cats %}<a href="{% url 'catalog_cat_id' cat.id %}">{{ cat.title }}</a>{% if not forloop.last %} | {% endif %}{% endfor %}</nav>
+<div class="cat-buttons">
+    {% for cat in cats %}
+        <a class="cat-btn{% if cat.pk == active_cat %} active{% endif %}" href="{% url 'catalog_cat_id' cat.pk %}">{{ cat.title }}</a>
+    {% endfor %}
+</div>
