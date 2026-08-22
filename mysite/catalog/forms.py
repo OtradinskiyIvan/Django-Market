@@ -24,7 +24,6 @@ class AddItemForm(forms.Form):
     price = forms.IntegerField()
     quantity = forms.IntegerField(initial=10, min_value=1)
     desc = forms.CharField(widget=forms.Textarea())
-    is_available = forms.BooleanField(initial=True, required=False)
     category = forms.ModelChoiceField(queryset=Category.objects.all(), empty_label='Set category')
     tags = forms.ModelMultipleChoiceField(
         queryset=Tag.objects.all(),

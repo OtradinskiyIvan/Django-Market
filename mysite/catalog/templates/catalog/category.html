@@ -2,8 +2,8 @@
 {% load catalog_tags %}
 {% block content %}
     <h1>{{ title }}</h1>
-    {% show_tags %}
     {% show_cats %}
+    {% show_tags %}
     {% if items_list %}
         <div class="product-grid">
             {% for item in items_list %}

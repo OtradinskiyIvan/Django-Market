@@ -44,4 +44,4 @@ def show_cats(context):
 def show_tags(context):
     request = context['request']
     selected = {int(v) for v in request.GET.getlist('tags') if v.isdigit()}
-    return {'tags': Tag.objects.all(), 'selected': selected}
+    return {'tags': Tag.objects.all(), 'selected': selected, 'reset_url': request.path}

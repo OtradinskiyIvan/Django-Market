@@ -1,3 +1,4 @@
+<h1>Categories</h1>
 <div class="cat-buttons">
     {% for cat in cats %}
         <a class="cat-btn{% if cat.pk == active_cat %} active{% endif %}" href="{% url 'catalog_cat_id' cat.pk %}">{{ cat.title }}</a>
